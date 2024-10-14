@@ -1,24 +1,22 @@
 <?php
 
-global $newqppr, $redirect_plugin, $qppr_setting_links;
+global $redirect_plugin, $qppr_setting_links;
 $qppr_setting_links = false;
 start_ppr_class();
 
 // =======================================
 // Main Plugin Redirect Class.
 // =======================================
-class quick_page_post_reds {
+class Quick_Redirects {
 	public $ppr_nofollow;
 	public $ppr_newindow;
 	public $ppr_url;
 	public $ppr_url_rewrite;
 	public $ppr_type;
 	public $ppr_curr_version;
-	public $ppr_metaurlnew;
 	public $thepprversion;
 	public $thepprmeta;
 	public $quickppr_redirects;
-	public $tohash;
 	public $adminlink;
 	public $ppr_all_redir_array;
 	public $homelink;
@@ -89,7 +87,6 @@ class quick_page_post_reds {
 		add_filter( 'qppr_admin_pointers-toplevel_page_redirect-updates', array( $this, 'qppr_register_pointer_existing' ) );  // add pointers filter
 		add_filter( 'qppr_admin_pointers-quick-redirects_page_redirect-options', array( $this, 'qppr_register_pointer_use_jquery' ) );  // add pointers filter
 		add_filter( 'qppr_admin_pointers-quick-redirects_page_meta_addon', array( $this, 'qppr_register_pointer_meta' ) );  // add pointers filter
-		// add_filter( 'wp_feed_cache_transient_lifetime',array($this,'ppr_wp_feed_options',10, 2));             // for testing FAQ page only
 
 		if ( $this->pproverride_active != '1' && ! is_admin() ) {                                  // don't run these if override active is set
 			add_action( 'init', array( $this, 'redirect' ), 1 );                                // add the 301 redirect action, high priority
@@ -476,9 +473,9 @@ class quick_page_post_reds {
 			if ( ( strpos( $request, '.' ) === false && strpos( $request, '?' ) === false ) && strpos( $request, '/', strlen( $request ) - 1 ) === false ) {
 				$request = $request . '/';
 			} // adds end folder marker if not a file end
-			if ( ( $request == '' || $request == '/' ) && $destination == '' ) {
+			if ( ( $request === '' || $request === '/' ) && $destination === '' ) {
 				continue; // if nothing there do nothing
-			} elseif ( $request != '' && $request != '/' && $destination == '' ) {
+			} elseif ( $request !== '' && $request !== '/' && $destination === '' ) {
 				$currRedirects[ $request ] = '/';
 			} else {
 				$currRedirects[ $request ] = $destination;
@@ -526,10 +523,10 @@ class quick_page_post_reds {
 			foreach ( $post_types_temp as $type ) {
 				if ( in_array( $type, $ptypesNOTok ) ) {
 					continue;
-				} elseif ( $type == 'post' ) {
+				} elseif ( 'post' === $type ) {
 						add_filter( 'manage_post_posts_columns', array( $this, 'set_custom_edit_qppr_columns' ) );
 						add_action( 'manage_post_posts_custom_column', array( $this, 'custom_qppr_column' ), 10, 2 );
-				} elseif ( $type == 'page' ) {
+				} elseif ( 'page' === $type ) {
 					// add_filter( "manage_page_pages_columns", array( $this, 'set_custom_edit_qppr_columns' ) );
 					// add_action( "manage_page_pages_custom_column" , array( $this, 'custom_qppr_column' ), 10, 2 );
 					add_filter( 'manage_page_posts_columns', array( $this, 'set_custom_edit_qppr_columns' ) );
@@ -586,7 +583,6 @@ class quick_page_post_reds {
 		add_submenu_page( 'redirect-updates', 'Redirect Summary', 'Redirect Summary', 'manage_options', 'redirect-summary', array( $this, 'ppr_summary_page' ) );
 		add_submenu_page( 'redirect-updates', 'Redirect Options', 'Redirect Options', 'manage_options', 'redirect-options', array( $this, 'ppr_settings_page' ) );
 		$qppr_meta_page = add_submenu_page( 'redirect-updates', 'Meta Options', 'Meta Options', 'manage_options', 'meta_addon', array( $this, 'qppr_meta_addon_page' ) );
-		add_submenu_page( 'redirect-updates', 'FAQs/Help', 'FAQs/Help', 'manage_options', 'redirect-faqs', array( $this, 'ppr_faq_page' ) );
 		add_action( 'admin_init', array( $this, 'register_pprsettings' ) );
 		add_action( 'load-' . $qppr_meta_page, array( $this, 'qppr_options_help_tab' ) );
 		add_action( 'load-' . $qppr_add_page, array( $this, 'qppr_options_help_tab' ) );
@@ -686,7 +682,7 @@ class quick_page_post_reds {
 			return;
 		}
 		global $wpdb;
-		$rewrite      = ( $this->pproverride_rewrite == '0' || $this->pproverride_rewrite == '' ) ? false : true;
+		$rewrite      = ( $this->pproverride_rewrite == '0' || $this->pproverride_rewrite === '' ) ? false : true;
 		$allNewWin    = get_option( 'ppr_override-newwindow', '0' );
 		$allNoFoll    = get_option( 'ppr_override-nofollow', '0' );
 		$noFollNewWin = get_option( 'quickppr_redirects_meta', array() );
@@ -765,51 +761,6 @@ class quick_page_post_reds {
 		register_setting( 'qppr-meta-settings-group', 'ppr_meta-message' );
 	}
 
-	function ppr_wp_feed_options( $cache, $url ) {
-		// this is only for testing cached FAQ
-		if ( $url == 'http://www.anadnet.com/?feed=qppr_faqs' ) {
-			$cache = '1';
-		}
-		return $cache;
-	}
-
-	function ppr_faq_page() {
-		include_once ABSPATH . WPINC . '/feed.php';
-		echo '
-		<div class="wrap">
-			<h2>' . esc_html__( 'Quick Page/Post Redirect FAQs/Help', 'quick-redirects' ) . '</h2>
-			<div align="left"><p>' . esc_html__( 'The FAQS are now on a feed that can be updated on the fly. If you have a question and don\'t see an answer, please send an email to <a href="mailto:info@anadnet.com">info@anadnet.com</a> and ask your question. If it is relevant to the plugin, it will be added to the FAQs feed so it will show up here. Please be sure to include the plugin you are asking a question about (Quick Page/Post Redirect Plugin) and any other information like your WordPress version and examples if the plugin is not working correctly for you. THANKS!', 'quick-redirects' ) . '</p>
-			<hr noshade color="#C0C0C0" size="1" />
-		';
-		$rss         = fetch_feed( 'http://www.anadnet.com/?feed=qppr_faqs&ver=' . $this->ppr_curr_version . '&loc=' . urlencode( $this->homelink ) );
-		$linkfaq     = array();
-		$linkcontent = array();
-		$maxitems    = 0;
-		if ( ! is_wp_error( $rss ) ) :
-				$maxitems  = $rss->get_item_quantity( 100 );
-				$rss_items = $rss->get_items( 0, $maxitems );
-		endif;
-			$aqr = 0;
-		if ( $maxitems != 0 ) {
-			foreach ( $rss_items as $item ) :
-				++$aqr;
-				$linkfaq[]     = '<li class="faq-top-item"><a href="#faq-' . $aqr . '">' . esc_html( $item->get_title() ) . '</a></li>';
-				$linkcontent[] = '<li class="faq-item"><a name="faq-' . $aqr . '"></a><h3 class="qa"><span class="qa">Q. </span>' . esc_html( $item->get_title() ) . '</h3><div class="qa-content"><span class="qa answer">A. </span>' . $item->get_content() . '</div><div class="toplink"><a href="#faq-top">top &uarr;</a></li>';
-			endforeach;
-		}
-		$output  = '<a name="faq-top"></a><h2>' . esc_html__( 'Table of Contents', 'quick-redirects' ) . '</h2>';
-		$output .= '<ol class="qppr-faq-links">';
-		$output .= implode( "\n", $linkfaq );
-		$output .= '</ol>';
-		$output .= '<h2>' . esc_html__( 'Questions/Answers', 'quick-redirects' ) . '</h2>';
-		$output .= '<ul class="qppr-faq-answers">';
-		$output .= implode( "\n", $linkcontent );
-		$output .= '</ul>';
-		$output .= '</div></div>';
-
-		echo $output;
-	}
-
 	function ppr_summary_page() {
 		?>
 <div class="wrap">
@@ -826,7 +777,7 @@ class quick_page_post_reds {
 	<div align="left">
 		<?php
 		if ( $this->pproverride_active == '1' ) {
-			echo '<div class="ppr-acor" style="margin:1px 0;width: 250px;font-weight: bold;padding: 2px;">' . esc_html__( 'Acitve Override is on - All Redirects are OFF!', 'quick-redirects' ) . '</div>';}
+			echo '<div class="ppr-acor" style="margin:1px 0;width: 250px;font-weight: bold;padding: 2px;">' . esc_html__( 'Active Override is on - All Redirects are OFF!', 'quick-redirects' ) . '</div>';}
 		if ( $this->pproverride_nofollow == '1' ) {
 			echo '<div class="ppr-nfor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . esc_html__( 'No Follow Override is on!', 'quick-redirects' ) . '</div>';}
 		if ( $this->pproverride_newwin == '1' ) {
@@ -1146,7 +1097,7 @@ class quick_page_post_reds {
 							<th scope="row" colspan="2" class="qppr-no-padding"><hr noshade color="#EAEAEA" size="1"></th>
 						</tr>
 						<tr>
-							<th scope="row" colspan="2"><h2 style="font-size:20px;display:inline-block;"><?php echo esc_html__( 'Master Override Options', 'quick-redirects' ); ?></h2><span><?php echo esc_html__( '<strong>NOTE: </strong>The below settings will override all individual settings.', 'quick-redirects' ); ?></span></th>
+							<th scope="row" colspan="2"><h2 style="font-size:20px;display:inline-block;"><?php echo esc_html__( 'Master Override Options', 'quick-redirects' ); ?></h2><span><?php echo __( '<strong>NOTE: </strong>The below settings will override all individual settings.', 'quick-redirects' ); ?></span></th>
 						</tr>
 						<tr>
 							<th scope="row"><label><?php echo esc_html__( 'Turn OFF all Redirects?', 'quick-redirects' ); ?> </label></th>
@@ -1158,7 +1109,7 @@ class quick_page_post_reds {
 							/> <span><?php echo esc_html__( 'Basically the same as having no redirects set up.', 'quick-redirects' ); ?></span></td>
 						</tr>
 						<tr>
-							<th scope="row"><label><?php echo esc_html__( 'Make ALL Redirects have <code>rel="nofollow"</code>?', 'quick-redirects' ); ?> </label></th>
+							<th scope="row"><label><?php echo __( 'Make ALL Redirects have <code>rel="nofollow"</code>?', 'quick-redirects' ); ?> </label></th>
 							<td><input type="checkbox" name="ppr_override-nofollow" value="1"
 							<?php
 							if ( get_option( 'ppr_override-nofollow' ) == '1' ) {
@@ -1218,7 +1169,7 @@ class quick_page_post_reds {
 						</tr>
 						<tr>
 							<th scope="row"><label><?php echo esc_html__( 'Make ALL Redirects go to this URL:', 'quick-redirects' ); ?> </label></th>
-							<td><input type="text" size="50" name="ppr_override-URL" value="<?php echo get_option( 'ppr_override-URL' ); ?>"/> <span><?php echo esc_html__( 'Use full URL including <code>http://</code>.', 'quick-redirects' ); ?></span></td>
+							<td><input type="text" size="50" name="ppr_override-URL" value="<?php echo get_option( 'ppr_override-URL' ); ?>"/> <span><?php echo __( 'Use full URL including <code>http://</code>.', 'quick-redirects' ); ?></span></td>
 						</tr>
 						<tr>
 							<th scope="row"><label><?php echo esc_html__( 'Rewrite ALL Redirects URLs to Show in LINK?', 'quick-redirects' ); ?> </label></th>
@@ -1233,7 +1184,7 @@ class quick_page_post_reds {
 							<th scope="row" colspan="2"><hr noshade color="#EAEAEA" size="1"></th>
 						</tr>
 						<tr>
-							<th scope="row" colspan="2" class="qppr-no-padding"><h2 style="display:inline-block;"><?php echo esc_html__( 'Plugin Clean Up', 'quick-redirects' ); ?></h2><span><?php echo esc_html__( '<strong>NOTE: </strong>This will DELETE all redirects - so be careful with this.', 'quick-redirects' ); ?></span></th>
+							<th scope="row" colspan="2" class="qppr-no-padding"><h2 style="display:inline-block;"><?php echo esc_html__( 'Plugin Clean Up', 'quick-redirects' ); ?></h2><span><?php echo __( '<strong>NOTE: </strong>This will DELETE all redirects - so be careful with this.', 'quick-redirects' ); ?></span></th>
 						</tr>
 						<tr>
 							<th scope="row"><label><?php echo esc_html__( 'Delete Redirects?', 'quick-redirects' ); ?> </label></th>
@@ -1308,15 +1259,15 @@ class quick_page_post_reds {
 				<b style="color:red;">' . esc_html__( 'IMPORTANT TROUBLESHOOTING NOTES:', 'quick-redirects' ) . '</b>
 				<ol style="margin-top:5px;">
 					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'At this time the New Window (NW) and No Follow (NF) features will not work for Quick Redirects unless "Use jQuery" is enabled in the options.', 'quick-redirects' ) . '</li>
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'It is recommended that the <b>Request URL</b> be relative to the ROOT directory and contain the <code>/</code> at the beginning.', 'quick-redirects' ) . '</li>
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'If you do use the domain name in the Request URL field, make sure it matches your site\'s domain style and protocol. For example, if your site uses "www" in front of your domain name, be sure to include it. if your site uses <code>https://</code>, use it as the protocol. Our best guess is that your domain and protocol are', 'quick-redirects' ) . ' <code>' . network_site_url( '/' ) . '</code></li>
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'It is recommended that the <b>Request URL</b> be relative to the ROOT directory and contain the <code>/</code> at the beginning.', 'quick-redirects' ) . '</li>
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'If you do use the domain name in the Request URL field, make sure it matches your site\'s domain style and protocol. For example, if your site uses "www" in front of your domain name, be sure to include it. if your site uses <code>https://</code>, use it as the protocol. Our best guess is that your domain and protocol are', 'quick-redirects' ) . ' <code>' . network_site_url( '/' ) . '</code></li>
 					<!--li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'If you are having issues with the link not redirecting on a SSL site with mixed SSL (meaning links can be either SSL or non SSL), try adding two redirects, one with and one without the SSL protocol.', 'quick-redirects' ) . '</li-->
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'The <b>Destination</b> field can be any valid URL or relative path (from root), for example', 'quick-redirects' ) . ' <code>http://www.mysite.com/destination-page/</code> OR <code>/destination-page/</code></li>
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'The <b>Destination</b> field can be any valid URL or relative path (from root), for example', 'quick-redirects' ) . ' <code>http://www.mysite.com/destination-page/</code> OR <code>/destination-page/</code></li>
 					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'In order for NW (open in a new window) or NF (rel="nofollow") options to work with Quick Redirects, you need to have:', 'quick-redirects' ) . '
 						<ol>
 							<li>' . esc_html__( '"Use jQuery?" option selected in the settings page', 'quick-redirects' ) . '</li>
 							<li>' . esc_html__( 'A link that uses the request url SOMEWHERE in your site page - i.e., in a menu, content, sidebar, etc.', 'quick-redirects' ) . ' </li>
-							<li>' . esc_html__( 'The open in a new window or nofollow settings will not happen if someone just types the old link in the URL or if they come from a bookmark or link outside your site - in essence, there needs to be a link that they click on in your site so that the jQuery script can add the appropriate <code>target</code> and <code>rel</code> properties to the link to make it work.', 'quick-redirects' ) . '</li>
+							<li>' . __( 'The open in a new window or nofollow settings will not happen if someone just types the old link in the URL or if they come from a bookmark or link outside your site - in essence, there needs to be a link that they click on in your site so that the jQuery script can add the appropriate <code>target</code> and <code>rel</code> properties to the link to make it work.', 'quick-redirects' ) . '</li>
 						</ol>
 					</li>
 				</ol>
@@ -1343,8 +1294,8 @@ class quick_page_post_reds {
 				array(
 					'id'      => 'qppr-load-page-content',
 					'title'   => esc_html__( 'Load Content?', 'quick-redirects' ),
-					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'Use the <strong>Load Content?</strong> option to allow the page content to load as normal or to only load a blank page or the content provided in the <strong>Page Content</strong> section. ', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'If checked, all of the original content will load, so keep this in mind when setting the <strong>Redirect Seconds</strong> - if set too low, the page will not compeletely load. ', 'quick-redirects' ) . '</p></div>',
+					'content' => '<div style="padding:10px 0;"><p>' . __( 'Use the <strong>Load Content?</strong> option to allow the page content to load as normal or to only load a blank page or the content provided in the <strong>Page Content</strong> section. ', 'quick-redirects' ) . '</p>
+				 <p>' . __( 'If checked, all of the original content will load, so keep this in mind when setting the <strong>Redirect Seconds</strong> - if set too low, the page will not compeletely load. ', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
@@ -1352,7 +1303,7 @@ class quick_page_post_reds {
 					'id'      => 'qppr-redirect-seconds',
 					'title'   => esc_html__( 'Redirect Seconds', 'quick-redirects' ),
 					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'Enter the nuber of seconds to wait before the redirect happens. Enter 0 to have an instant redirect*.', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( '*Keep in mind that the redirect seconds will start counting only AFTER the <strong>Redirect Trigger</strong> element is loaded - so 0 may be slightly longer than instant, depending on how much content needs to load before the trigger happens.', 'quick-redirects' ) . '</p></div>',
+				 <p>' . __( '*Keep in mind that the redirect seconds will start counting only AFTER the <strong>Redirect Trigger</strong> element is loaded - so 0 may be slightly longer than instant, depending on how much content needs to load before the trigger happens.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
@@ -1360,9 +1311,9 @@ class quick_page_post_reds {
 					'id'      => 'qppr-redirect-trigger',
 					'title'   => esc_html__( 'Redirect Trigger', 'quick-redirects' ),
 					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'The class or id or tag name of the element to load before the redirect starts counting down. If nothing is used, it will default to the body tag as a trigger.', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'If you use a class, the class name should have the "." in the name, i.e., <strong>.my-class-name</strong>', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'If you use an id, the id should have the "#" in the name, i.e., <strong>#my-id-name</strong>.', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'If you use a tag name, the name should NOT have the "&lt;" or "&gt;" characters in the name, i.e., &lt;body&gt; would just be <strong>body</strong>.', 'quick-redirects' ) . '</p>
+				 <p>' . __( 'If you use a class, the class name should have the "." in the name, i.e., <strong>.my-class-name</strong>', 'quick-redirects' ) . '</p>
+				 <p>' . __( 'If you use an id, the id should have the "#" in the name, i.e., <strong>#my-id-name</strong>.', 'quick-redirects' ) . '</p>
+				 <p>' . __( 'If you use a tag name, the name should NOT have the "&lt;" or "&gt;" characters in the name, i.e., &lt;body&gt; would just be <strong>body</strong>.', 'quick-redirects' ) . '</p>
 				 <p>' . esc_html__( 'Do not use a tag name that is common, like "a" or "div" as it will trigger on all events.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
@@ -1370,9 +1321,9 @@ class quick_page_post_reds {
 				array(
 					'id'      => 'qppr-redirect-append',
 					'title'   => esc_html__( 'Append Content To', 'quick-redirects' ),
-					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'The class, id or tag name that you want the content in the <strong>Page Content</strong> to be loading into.', 'quick-redirects' ) . '</p>
+					'content' => '<div style="padding:10px 0;"><p>' . __( 'The class, id or tag name that you want the content in the <strong>Page Content</strong> to be loading into.', 'quick-redirects' ) . '</p>
 				 <p>' . esc_html__( 'If you are loading the content of the page, use an existing class or id for an existing element (i.e., .page-content) so your additional page content (if any) is loaded into that element.', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'When no class, id or tag name is used, the <strong>body</strong> tag will be used.', 'quick-redirects' ) . '</p></div>',
+				 <p>' . __( 'When no class, id or tag name is used, the <strong>body</strong> tag will be used.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
@@ -1380,8 +1331,8 @@ class quick_page_post_reds {
 					'id'      => 'qppr-redirect-content',
 					'title'   => esc_html__( 'Page Content', 'quick-redirects' ),
 					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'This is your page content you want to add. If you have a "tracking pixel" script or image tag you want to use, add it here.', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'A good example of use, is adding a tracking script (or Facebook Conversion Pixel) to the <strong>Page Content box</strong> and unchecking the <strong>Load Content?</strong> box. Then set the <strong>Redirect Seconds</strong> to 1 or 2 so the script has a chance to load and set <strong>Append Content</strong> To to "body" and <strong>Redirect Trigger</strong> to "body".', 'quick-redirects' ) . '</p>
-				 <p>' . esc_html__( 'Additionally, you can add the redirect counter to the page by adding the code sample under the <strong>Page Content</strong> box.', 'quick-redirects' ) . '</p></div>',
+				 <p>' . __( 'A good example of use, is adding a tracking script (or Facebook Conversion Pixel) to the <strong>Page Content box</strong> and unchecking the <strong>Load Content?</strong> box. Then set the <strong>Redirect Seconds</strong> to 1 or 2 so the script has a chance to load and set <strong>Append Content</strong> To to "body" and <strong>Redirect Trigger</strong> to "body".', 'quick-redirects' ) . '</p>
+				 <p>' . __( 'Additionally, you can add the redirect counter to the page by adding the code sample under the <strong>Page Content</strong> box.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 		}
@@ -1402,17 +1353,17 @@ class quick_page_post_reds {
 		?>
 		<?php if ( $isJQueryOn == '' && ( $isJQueryMsgHidden == '' || $isJQueryMsgHidden == '0' ) ) { ?>
 			<div class="usejqpprmessage error below-h2" id="usejqpprmessage">
-				<?php echo esc_html__( 'The <code>Use jQuery?</code> option is turned off in the settings.<br/>In order to use <strong>NW</strong> (open in a new window) or <strong>NF</strong> (add rel="nofollow") options for Quick Redirects, you must have it enabled.', 'quick-redirects' ); ?><br/>
+				<?php echo __( 'The <code>Use jQuery?</code> option is turned off in the settings.<br/>In order to use <strong>NW</strong> (open in a new window) or <strong>NF</strong> (add rel="nofollow") options for Quick Redirects, you must have it enabled.', 'quick-redirects' ); ?><br/>
 				<div class="hidepprjqmessage" style=""><a href="javascript:void(0);" id="hidepprjqmessage"><?php echo esc_html__( 'hide this message', 'quick-redirects' ); ?></a></div>
 			</div>
 		<?php } elseif ( $isJQueryMsgHidden2 != '1' ) { ?>
 			<div class="usejqpprmessage info below-h2" id="usejqpprmessage2">
-				<?php echo esc_html__( 'To use the <strong>NW</strong> (open in a new window) <strong>NF</strong> (nofollow) options, check the appropriate option and update when adding redirects. Then, any link in the page that has the request URL will be updated with these options (as long as you have <code>Use jQuery?</code> enabled in the plugin settings.', 'quick-redirects' ); ?>
+				<?php echo __( 'To use the <strong>NW</strong> (open in a new window) <strong>NF</strong> (nofollow) options, check the appropriate option and update when adding redirects. Then, any link in the page that has the request URL will be updated with these options (as long as you have <code>Use jQuery?</code> enabled in the plugin settings.', 'quick-redirects' ); ?>
 				<div class="hidepprjqmessage" style=""><a href="javascript:void(0);" id="hidepprjqmessage2"><?php echo esc_html__( 'hide this message', 'quick-redirects' ); ?></a></div>
 			</div>
 		<?php } ?>
 	<p><?php echo esc_html__( 'Quick Redirects are useful when you have links from an old site that now come up 404 Not Found, and you need to have them redirect to a new location on the current site - as long as the old site and the current site have the same domain name. They are also helpful if you have an existing URL that you need to send some place else and you don\'t want to create a Page or Post just to use the individual Page/Post Redirect option.', 'quick-redirects' ); ?></p>
-	<p><?php echo esc_html__( 'To add Quick Redirects, put the URL for the redirect in the <strong>Request URL</strong> field, and the URL it should be redirected to in the <strong>Destination URL</strong> field. To delete a redirect, click the trash can at the end of that row. To edit a redirect, click the pencil edit icon.', 'quick-redirects' ); ?></p>
+	<p><?php echo __( 'To add Quick Redirects, put the URL for the redirect in the <strong>Request URL</strong> field, and the URL it should be redirected to in the <strong>Destination URL</strong> field. To delete a redirect, click the trash can at the end of that row. To edit a redirect, click the pencil edit icon.', 'quick-redirects' ); ?></p>
 	<p><?php echo esc_html__( 'See \'HELP\' in the upper right corner, for troubleshooting problems and example redirects.', 'quick-redirects' ); ?></p>
 	<form method="post" action="admin.php?page=redirect-updates" id="qppr_quick_save_form">
 		<?php wp_nonce_field( 'add_qppr_redirects' ); ?>
@@ -1950,13 +1901,13 @@ class quick_page_post_reds {
 		// The actual fields for data entry
 		$pprredirecttype = get_post_meta( $post->ID, '_pprredirect_type', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_type', true ) : '';
 		$pprredirecturl  = get_post_meta( $post->ID, '_pprredirect_url', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_url', true ) : '';
-		echo '<label for="pprredirect_active" style="padding:2px 0;"><input type="checkbox" name="pprredirect_active" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_active', true ), 0 ) . ' />&nbsp;' . esc_html__( 'Make Redirect <strong>Active</strong>.', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'Check to turn on or redirect will not work.', 'quick-redirects' ) . '</span></span></label><br />';
-		echo '<label for="pprredirect_newwindow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_newwindow" id="pprredirect_newwindow" value="_blank" ' . checked( '_blank', get_post_meta( $post->ID, '_pprredirect_newwindow', true ), 0 ) . '>&nbsp;' . esc_html__( 'Open in a <strong>new window.</strong>', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-redirects' ) . '</span></span></label><br />';
-		echo '<label for="pprredirect_relnofollow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_relnofollow" id="pprredirect_relnofollow" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_relnofollow', true ), 0 ) . '>&nbsp;' . esc_html__( 'Add <strong>rel="nofollow"</strong> to link.', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-redirects' ) . '</span></span></label><br />';
-		echo '<label for="pprredirect_rewritelink" style="padding:2px 0;"><input type="checkbox" name="pprredirect_rewritelink" id="pprredirect_rewritelink" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_rewritelink', true ), 0 ) . '>&nbsp;' . esc_html__( '<strong>Show</strong> Redirect URL in link.', 'quick-redirects' ) . ' <span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options. This will only change the URL in the link <strong>NOT</strong> the URL in the Address bar.', 'quick-redirects' ) . '</span></span></label><br /><br />';
+		echo '<label for="pprredirect_active" style="padding:2px 0;"><input type="checkbox" name="pprredirect_active" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_active', true ), 0 ) . ' />&nbsp;' . __( 'Make Redirect <strong>Active</strong>.', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'Check to turn on or redirect will not work.', 'quick-redirects' ) . '</span></span></label><br />';
+		echo '<label for="pprredirect_newwindow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_newwindow" id="pprredirect_newwindow" value="_blank" ' . checked( '_blank', get_post_meta( $post->ID, '_pprredirect_newwindow', true ), 0 ) . '>&nbsp;' . __( 'Open in a <strong>new window.</strong>', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-redirects' ) . '</span></span></label><br />';
+		echo '<label for="pprredirect_relnofollow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_relnofollow" id="pprredirect_relnofollow" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_relnofollow', true ), 0 ) . '>&nbsp;' . __( 'Add <strong>rel="nofollow"</strong> to link.', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-redirects' ) . '</span></span></label><br />';
+		echo '<label for="pprredirect_rewritelink" style="padding:2px 0;"><input type="checkbox" name="pprredirect_rewritelink" id="pprredirect_rewritelink" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_rewritelink', true ), 0 ) . '>&nbsp;' . __( '<strong>Show</strong> Redirect URL in link.', 'quick-redirects' ) . ' <span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'To increase effectivness, select "Use jQuery" in the options. This will only change the URL in the link <strong>NOT</strong> the URL in the Address bar.', 'quick-redirects' ) . '</span></span></label><br /><br />';
 		// echo '<label for="pprredirect_casesensitive" style="padding:2px 0;"><input type="checkbox" name="pprredirect_casesensitive" id="pprredirect_casesensitive" value="1" '. checked('1',get_post_meta($post->ID,'_pprredirect_casesensitive',true),0).'>&nbsp;Make the Redirect Case Insensitive.</label><br /><br />';
 		echo '<label for="pprredirect_url"><b>' . esc_html__( 'Redirect / Destination URL:', 'quick-redirects' ) . '</b></label><br />';
-		echo '<input type="text" style="width:75%;margin-top:2px;margin-bottom:2px;" name="pprredirect_url" value="' . esc_url( $pprredirecturl ) . '" /><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help"><br />' . esc_html__( '(i.e., <strong>http://example.com</strong> or <strong>/somepage/</strong> or <strong>p=15</strong> or <strong>155</strong>. Use <b>FULL URL</b> <i>including</i> <strong>http://</strong> for all external <i>and</i> meta redirects.)', 'quick-redirects' ) . '</span></span><br /><br />';
+		echo '<input type="text" style="width:75%;margin-top:2px;margin-bottom:2px;" name="pprredirect_url" value="' . esc_url( $pprredirecturl ) . '" /><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help"><br />' . __( '(i.e., <strong>http://example.com</strong> or <strong>/somepage/</strong> or <strong>p=15</strong> or <strong>155</strong>. Use <b>FULL URL</b> <i>including</i> <strong>http://</strong> for all external <i>and</i> meta redirects.)', 'quick-redirects' ) . '</span></span><br /><br />';
 		echo '<label for="pprredirect_type"><b>' . esc_html__( 'Type of Redirect:', 'quick-redirects' ) . '</b></label><br />';
 
 		switch ( $pprredirecttype ) :
@@ -1993,7 +1944,7 @@ class quick_page_post_reds {
 		echo '<div class="qppr-meta-section-wrapper' . $metasel . '">';
 		echo '	<label for="pprredirect_meta_secs" style="padding:2px 0;"><strong>' . esc_html__( 'Redirect Seconds (ONLY for meta redirects).', 'quick-redirects' ) . '</strong></label><br /><input type="text" name="pprredirect_meta_secs" id="pprredirect_meta_secs" value="' . ( get_post_meta( $post->ID, '_pprredirect_meta_secs', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_meta_secs', true ) : '' ) . '" size="3"><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'Leave blank to use options setting. 0 = instant.', 'quick-redirects' ) . ' </span></span><br /><br />';
 		echo '</div>';
-		echo esc_html__( '<strong>NOTE:</strong> For a Page or Post (or Custom Post) Redirect to work, it may need to be published first and then saved again as a Draft. If you do not already have a page/post created you can add a \'Quick\' redirect using the', 'quick-redirects' ) . ' <a href="./admin.php?page=redirect-updates">' . esc_html__( 'Quick Redirects', 'quick-redirects' ) . '</a> ' . esc_html__( 'method.', 'quick-redirects' );
+		echo __( '<strong>NOTE:</strong> For a Page or Post (or Custom Post) Redirect to work, it may need to be published first and then saved again as a Draft. If you do not already have a page/post created you can add a \'Quick\' redirect using the', 'quick-redirects' ) . ' <a href="./admin.php?page=redirect-updates">' . esc_html__( 'Quick Redirects', 'quick-redirects' ) . '</a> ' . esc_html__( 'method.', 'quick-redirects' );
 	}
 
 	function isOne_none( $val = '' ) {
@@ -2037,11 +1988,8 @@ class quick_page_post_reds {
 			$my_meta_data['_pprredirect_url']         = isset( $_REQUEST['pprredirect_url'] ) ? esc_url_raw( $_REQUEST['pprredirect_url'], $protocols ) : '';
 			$my_meta_data['_pprredirect_meta_secs']   = isset( $_REQUEST['pprredirect_meta_secs'] ) && (int) $_REQUEST['pprredirect_meta_secs'] > 0 ? (int) $_REQUEST['pprredirect_meta_secs'] : '';
 
-			// function qppr_sanitize_pprredirect_active_meta( $meta_value ) {
-			// return absint( $meta_value );
-			// }
-			add_filter( 'sanitize_post_meta__pprredirect_newwindow', 'qppr_sanitize_pprredirect_newwindow_meta', 10, 1 );
-			add_filter( 'sanitize_post_meta__pprredirect_active', 'qppr_sanitize_pprredirect_active_meta', 10, 1 );
+			add_filter( 'sanitize_post_meta__pprredirect_newwindow', 'quick_redirects_sanitize_pprredirect_newwindow_meta', 10, 1 );
+			add_filter( 'sanitize_post_meta__pprredirect_active', 'quick_redirects_sanitize_pprredirect_active_meta', 10, 1 );
 
 			$info = $this->appip_parseURI( $my_meta_data['_pprredirect_url'] );
 			// $my_meta_data['_pprredirect_url'] = esc_url_raw($info['url']);
@@ -2482,7 +2430,7 @@ class quick_page_post_reds {
 		$timer     = (int) $secs * 100;
 		$appendTo  = $appMsgTo != '' ? $appMsgTo : get_option( 'qppr_meta_append_to', 'body' );
 		$injectMsg = $content != '' ? '<div id="ppr_custom_message">' . $content . '</div>' : '';
-		$bfamily   = qppr_get_browser_family();
+		$bfamily   = quick_redirects_get_browser_family();
 		if ( ! $load ) {
 			// wp_enqueue_script( 'qppr-meta-redirect-no-load', plugins_url( '/js/qppr_meta_redirect.js', __FILE__ ), array( 'jquery' ), $this->ppr_curr_version, false );
 			wp_enqueue_script( 'qppr-meta-redirect-no-load', plugins_url( '/js/qppr_meta_redirect.min.js', __FILE__ ), array( 'jquery' ), $this->ppr_curr_version, false );
@@ -2559,7 +2507,7 @@ class quick_page_post_reds {
 				</tr>
 				<tr>
 					<th scope="row"><label><?php echo esc_html__( 'Redirect Trigger', 'quick-redirects' ); ?>:</label></th>
-					<td><input type="text" size="25" id="qppr_meta_addon_trigger" name="qppr_meta_addon_trigger" value="<?php echo get_option( 'qppr_meta_addon_trigger', 'body' ); ?>"/><span><?php printf( esc_html__( 'The %1$s, %2$s or tag name of the element you want to load before triggering redirect. Use a %3$s in the class name or %4$s for the ID. <strong><em>For example:</em></strong> if you want it to redirect when the body tag loads, you would type %5$s above. To redirect after an element with a class or ID, use %6$s or %7$s.', 'quick-redirects' ), '<code>class</code>', '<code>ID</code>', '<code>.</code>', '<code>#</code>', '<code>body</code>', '<code>.some-class</code>', '<code>#some-id</code>' ); ?></span></td>
+					<td><input type="text" size="25" id="qppr_meta_addon_trigger" name="qppr_meta_addon_trigger" value="<?php echo get_option( 'qppr_meta_addon_trigger', 'body' ); ?>"/><span><?php printf( __( 'The %1$s, %2$s or tag name of the element you want to load before triggering redirect. Use a %3$s in the class name or %4$s for the ID. <strong><em>For example:</em></strong> if you want it to redirect when the body tag loads, you would type %5$s above. To redirect after an element with a class or ID, use %6$s or %7$s.', 'quick-redirects' ), '<code>class</code>', '<code>ID</code>', '<code>.</code>', '<code>#</code>', '<code>body</code>', '<code>.some-class</code>', '<code>#some-id</code>' ); ?></span></td>
 				</tr>
 				<tr>
 					<th scope="row"><label><?php echo esc_html__( 'Append Content To', 'quick-redirects' ); ?>:</label></th>
@@ -2604,12 +2552,12 @@ class quick_page_post_reds {
 // END Main Redirect Class.
 // =======================================
 function start_ppr_class() {
-	global $newqppr, $redirect_plugin;
-	$redirect_plugin = $newqppr = new quick_page_post_reds(); // call our class
+	global $redirect_plugin;
+	$redirect_plugin = new Quick_Redirects(); // call our class
 }
 
 /**
- * qppr_create_individual_redirect - helper function to create Individual Redirect programatically.
+ * Helper function to create Individual Redirect programatically.
  *
  * @param array $atts default settings for array.
  *       post_id int|string the post id
@@ -2631,10 +2579,10 @@ function start_ppr_class() {
 		'nofollow'  => 0,
 		'rewrite'   => 0
 	);
-	qppr_create_individual_redirect( $atts );
+	quick_redirects_individual_redirect( $atts );
  * *****************
  */
-function qppr_create_individual_redirect( $atts = array() ) {
+function quick_redirects_individual_redirect( $atts = array() ) {
 	if ( ! is_array( $atts ) ) {
 		return false;
 	}
@@ -2651,17 +2599,17 @@ function qppr_create_individual_redirect( $atts = array() ) {
 	if ( $post_id == '0' || $url == '' ) {
 		return false;
 	}
-	// some validation
+	// Some validation.
 	$type      = ! in_array( $type, array( '301', '302', '307', 'meta' ) ) ? '301' : $type;
 	$active    = (int) $active == 1 ? 1 : 0;
 	$newwindow = (int) $newwindow == 1 ? 1 : 0;
 	$nofollow  = (int) $nofollow == 1 ? 1 : 0;
 	$rewrite   = (int) $rewrite == 1 ? 1 : 0;
-	// set required meta
+	// Set required meta.
 	add_post_meta( $post_id, '_pprredirect_url', $url );
 	add_post_meta( $post_id, '_pprredirect_type', $type );
 	add_post_meta( $post_id, '_pprredirect_active', $active );
-	// set optional meta
+	// Set optional meta.
 	if ( $rewrite == 1 ) {
 		add_post_meta( $post_id, '_pprredirect_rewritelink', 1 );
 	}
@@ -2674,16 +2622,13 @@ function qppr_create_individual_redirect( $atts = array() ) {
 	return true;
 }
 /**
- * qppr_delete_individual_redirect - helper function to delete Individual Redirect programatically.
+ * Helper function to delete Individual Redirect programatically.
  *
  * @param post_id int|string the post id
  * @return bool true on success
- * @example:
- * *****************
-	qppr_delete_individual_redirect( $post_id );
- * *****************
+ * @example: quick_redirects_delete_individual_redirect( $post_id );
  */
-function qppr_delete_individual_redirect( $post_id = 0 ) {
+function quick_redirects_delete_individual_redirect( $post_id = 0 ) {
 	$post_id = (int) $post_id;
 	if ( $post_id == 0 ) {
 		return false;
@@ -2710,7 +2655,7 @@ function qppr_delete_individual_redirect( $post_id = 0 ) {
 }
 
 /**
- * qppr_create_quick_redirect - helper function to create Quick Redirect programatically.
+ * Helper function to create Quick Redirect programatically.
  *
  * @param array $atts default settings for array.
  *       request_url string redirect URL
@@ -2726,10 +2671,10 @@ function qppr_delete_individual_redirect( $post_id = 0 ) {
 		'newwindow'         => 1,
 		'nofollow'          => 0,
 	);
-	qppr_create_quick_redirect( $atts );
+	quick_redirects_create_quick_redirect( $atts );
  * *****************
  */
-function qppr_create_quick_redirect( $atts = array() ) {
+function quick_redirects_create_quick_redirect( $atts = array() ) {
 	if ( ! is_array( $atts ) ) {
 		return false;
 	}
@@ -2744,7 +2689,7 @@ function qppr_create_quick_redirect( $atts = array() ) {
 		return false;
 	}
 
-	global $newqppr, $redirect_plugin;
+	global $redirect_plugin;
 	$currRedirects   = get_option( 'quickppr_redirects', array() );
 	$currMeta        = get_option( 'quickppr_redirects_meta', array() );
 	$protocols       = apply_filters( 'qppr_allowed_protocols', array( 'http', 'https', 'ftp', 'ftps', 'mailto', 'news', 'irc', 'gopher', 'nntp', 'feed', 'telnet', 'mms', 'rtsp', 'svn', 'tel', 'fax', 'xmpp' ) );
@@ -2772,23 +2717,23 @@ function qppr_create_quick_redirect( $atts = array() ) {
 	update_option( 'quickppr_redirects_meta', sanitize_option( 'quickppr_redirects_meta', $currMeta ) );
 	$redirect_plugin->quickppr_redirectsmeta = get_option( 'quickppr_redirects_meta', array() );
 	$redirect_plugin->quickppr_redirects     = get_option( 'quickppr_redirects', array() );
+
 	return true;
 }
+
 /**
- * qppr_delete_quick_redirect - helper function to delete Quick Redirect programatically.
+ * Helper function to delete Quick Redirect programatically.
  *
  * @param request_url string redirect URL
  * @return bool true on success
- * @example:
- * *****************
-	qppr_delete_quick_redirect( '/some-url/' );
- * *****************
+ * @example: quick_redirects_delete_quick_redirect( '/some-url/' );
  */
-function qppr_delete_quick_redirect( $request_url = '' ) {
-	if ( $request_url == '' ) {
+function quick_redirects_delete_quick_redirect( $request_url = '' ) {
+	if ( '' === $request_url ) {
 		return false;
 	}
-	global $newqppr, $redirect_plugin;
+
+	global $redirect_plugin;
 	$currRedirects = get_option( 'quickppr_redirects', array() );
 	$currMeta      = get_option( 'quickppr_redirects_meta', array() );
 	$protocols     = apply_filters( 'qppr_allowed_protocols', array( 'http', 'https', 'ftp', 'ftps', 'mailto', 'news', 'irc', 'gopher', 'nntp', 'feed', 'telnet', 'mms', 'rtsp', 'svn', 'tel', 'fax', 'xmpp' ) );
@@ -2804,22 +2749,20 @@ function qppr_delete_quick_redirect( $request_url = '' ) {
 	update_option( 'quickppr_redirects_meta', sanitize_option( 'quickppr_redirects_meta', $currMeta ) );
 	$redirect_plugin->quickppr_redirectsmeta = get_option( 'quickppr_redirects_meta', array() );
 	$redirect_plugin->quickppr_redirects     = get_option( 'quickppr_redirects', array() );
+
 	return true;
 }
 
 /**
- * qppr_get_browser_family - helper function that uses HTTP_USER_AGENT to determine browser family (for meta redirect).
+ * Helper function that uses HTTP_USER_AGENT to determine browser family (for meta redirect).
  *
  * @param type string either 'name' or 'class'
  * @return string returns browser family name or class (using sanitize_title_with_dashes function).
  *       returns 'unknown' if browser family is not known.
  * @since: 5.1.3
- * @example:
- * *****************
-	$browserFamilyName = qppr_get_browser_family( 'name' );
- * *****************
+ * @example: $browserFamilyName = quick_redirects_get_browser_family( 'name' );
  */
-function qppr_get_browser_family( $type = 'class' ) {
+function quick_redirects_get_browser_family( $type = 'class' ) {
 	// name or class
 	global $is_iphone, $is_chrome, $is_safari, $is_NS4, $is_opera, $is_macIE, $is_winIE, $is_gecko, $is_lynx, $is_IE, $is_edge;
 	if ( $is_IE ) {
@@ -2855,13 +2798,13 @@ function qppr_get_browser_family( $type = 'class' ) {
 	} else {
 		$name = 'Unknown';
 	}
-	if ( $type == 'name' ) {
+	if ( 'name' === $type ) {
 		return $name;
 	}
 	return sanitize_title_with_dashes( 'browser-' . $name );
 }
 
-function qppr_sanitize_option_redirects( $value ) {
+function quick_redirects_sanitize_option_redirects( $value ) {
 	$new_value = array();
 
 	foreach ( $value as $url_from => $url_to ) {
@@ -2870,9 +2813,9 @@ function qppr_sanitize_option_redirects( $value ) {
 
 	return $new_value;
 }
-add_filter( 'sanitize_option_quickppr_redirects', 'qppr_sanitize_option_redirects', 10, 1 );
+add_filter( 'sanitize_option_quickppr_redirects', 'quick_redirects_sanitize_option_redirects', 10, 1 );
 
-function qppr_sanitize_option_redirects_meta( $value ) {
+function quick_redirects_sanitize_option_redirects_meta( $value ) {
 	$new_value = array();
 
 	foreach ( $value as $url => $meta ) {
@@ -2884,33 +2827,33 @@ function qppr_sanitize_option_redirects_meta( $value ) {
 
 	return $new_value;
 }
-add_filter( 'sanitize_option_quickppr_redirects_meta', 'qppr_sanitize_option_redirects_meta', 10, 1 );
+add_filter( 'sanitize_option_quickppr_redirects_meta', 'quick_redirects_sanitize_option_redirects_meta', 10, 1 );
 
-function qppr_sanitize_pprredirect_active_meta( $meta_value ) {
+function quick_redirects_sanitize_pprredirect_active_meta( $meta_value ) {
 	return absint( $meta_value );
 }
-add_filter( 'sanitize_post_meta__pprredirect_active', 'qppr_sanitize_pprredirect_active_meta', 10, 1 );
+add_filter( 'sanitize_post_meta__pprredirect_active', 'quick_redirects_sanitize_pprredirect_active_meta', 10, 1 );
 
-function qppr_sanitize_pprredirect_newwindow_meta( $meta_value ) {
+function quick_redirects_sanitize_pprredirect_newwindow_meta( $meta_value ) {
 	return sanitize_text_field( $meta_value );
 }
-add_filter( 'sanitize_post_meta__pprredirect_newwindow', 'qppr_sanitize_pprredirect_newwindow_meta', 10, 1 );
+add_filter( 'sanitize_post_meta__pprredirect_newwindow', 'quick_redirects_sanitize_pprredirect_newwindow_meta', 10, 1 );
 
-function qppr_sanitize_pprredirect_relnofollow_meta( $meta_value ) {
+function quick_redirects_sanitize_pprredirect_relnofollow_meta( $meta_value ) {
 	return absint( $meta_value );
 }
-add_filter( 'sanitize_post_meta__pprredirect_relnofollow', 'qppr_sanitize_pprredirect_relnofollow_meta', 10, 1 );
+add_filter( 'sanitize_post_meta__pprredirect_relnofollow', 'quick_redirects_sanitize_pprredirect_relnofollow_meta', 10, 1 );
 
-function qppr_sanitize_pprredirect_rewritelink_meta( $meta_value ) {
+function quick_redirects_sanitize_pprredirect_rewritelink_meta( $meta_value ) {
 	return absint( $meta_value );
 }
-add_filter( 'sanitize_post_meta__pprredirect_rewritelink', 'qppr_sanitize_pprredirect_rewritelink_meta', 10, 1 );
+add_filter( 'sanitize_post_meta__pprredirect_rewritelink', 'quick_redirects_sanitize_pprredirect_rewritelink_meta', 10, 1 );
 
-function qppr_sanitize_pprredirect_type_meta( $meta_value ) {
+function quick_redirects_sanitize_pprredirect_type_meta( $meta_value ) {
 	if ( $meta_value != 'meta' ) {
 		return absint( $meta_value );
 	}
 
 	return sanitize_text_field( $meta_value );
 }
-add_filter( 'sanitize_post_meta__pprredirect_type', 'qppr_sanitize_pprredirect_type_meta', 10, 1 );
+add_filter( 'sanitize_post_meta__pprredirect_type', 'quick_redirects_sanitize_pprredirect_type_meta', 10, 1 );
