@@ -10,7 +10,9 @@ Easily redirect pages/posts or custom post types to another page/post or externa
 
 == Description ==
 
-This plugin is a fork of [Quick Page/Post Redirect Plugin](https://wordpress.org/plugins/quick-pagepost-redirect-plugin/). This fork is created to fix PHP 8 issues and make it compatible with it.
+> I have forked the [Quick Page/Post Redirect Plugin](https://wordpress.org/plugins/quick-pagepost-redirect-plugin/) to make it compatible with PHP 8. The original plugin was experiencing some issues with the newer PHP version, so I have made the necessary adjustments to ensure it works smoothly.
+
+Let me know if you have any questions or need assistance with the updated plugin.
 
 This plugin has two redirect functionalities - **"Quick Redirects"** and **"Individual Redirects"**:
 
