@@ -36,9 +36,11 @@ class quick_page_post_reds {
 	public $pproverride_casesensitive;
 	public $ppruse_jquery;
 	public $pprptypes_ok;
+	public $ppr_metaurl;
+	public $pprshowcols;
 
 	function __construct() {
-		$this->ppr_curr_version          = '5.2.4';
+		$this->ppr_curr_version          = '1.0.0';
 		$this->ppr_nofollow              = array();
 		$this->ppr_newindow              = array();
 		$this->ppr_url                   = array();
@@ -579,7 +581,7 @@ class quick_page_post_reds {
 	}
 
 	function ppr_add_menu_and_metaboxes() {
-		/* add menus */
+		/* Add menus */
 		$qppr_add_page = add_menu_page( 'Quick Redirects', 'Quick Redirects', 'manage_options', 'redirect-updates', array( $this, 'ppr_options_page' ), 'dashicons-external' );
 		add_submenu_page( 'redirect-updates', 'Quick Redirects', 'Quick Redirects', 'manage_options', 'redirect-updates', array( $this, 'ppr_options_page' ) );
 		$qppr_exp_page = add_submenu_page( 'redirect-updates', 'Import/Export', 'Import/Export', 'manage_options', 'redirect-import-export', array( $this, 'ppr_import_export_page' ) );
@@ -649,10 +651,10 @@ class quick_page_post_reds {
 			$secDeleteNonce = wp_create_nonce( 'qppr_ajax_delete_ALL_verify' );
 			$protocols      = apply_filters( 'qppr_allowed_protocols', array( 'http', 'https', 'ftp', 'ftps', 'mailto', 'news', 'irc', 'gopher', 'nntp', 'feed', 'telnet', 'mms', 'rtsp', 'svn', 'tel', 'fax', 'xmpp' ) );
 
-			wp_enqueue_style( 'qppr_admin_meta_style', plugins_url( '/css/qppr_admin_style.css', __FILE__ ), null, $this->ppr_curr_version );
+			wp_enqueue_style( 'qppr_admin_meta_style', plugins_url( '/css/qppr_admin_style.css', QUICK_REDIRECTS_FILE ), null, $this->ppr_curr_version );
 
-			// wp_enqueue_script( 'qppr_admin_meta_script', plugins_url( '/js/qppr_admin_script.js', __FILE__ ) , array('jquery'), $this->ppr_curr_version );
-			wp_enqueue_script( 'qppr_admin_meta_script', plugins_url( '/js/qppr_admin_script.min.js', __FILE__ ), array( 'jquery' ), $this->ppr_curr_version );
+			// wp_enqueue_script( 'qppr_admin_meta_script', plugins_url( '/js/qppr_admin_script.js', QUICK_REDIRECTS_FILE ) , array('jquery'), $this->ppr_curr_version );
+			wp_enqueue_script( 'qppr_admin_meta_script', plugins_url( '/js/qppr_admin_script.min.js', QUICK_REDIRECTS_FILE ), array( 'jquery' ), $this->ppr_curr_version );
 			wp_localize_script(
 				'qppr_admin_meta_script',
 				'qpprData',
@@ -662,7 +664,7 @@ class quick_page_post_reds {
 					'protocols'                  => $protocols,
 					'msgAllDeleteConfirm'        => __( 'Are you sure you want to PERMANENTLY Delete ALL Redirects and Settings (this cannot be undone)?', 'quick-pagepost-redirect-plugin' ),
 					'msgQuickDeleteConfirm'      => __( 'Are you sure you want to PERMANENTLY Delete ALL Quick Redirects?', 'quick-pagepost-redirect-plugin' ),
-					'msgIndividualDeleteConfirm' => __( 'Are you sure you want to PERMANENTLY Delets ALL Individual Redirects?', 'quick-pagepost-redirect-plugin' ),
+					'msgIndividualDeleteConfirm' => __( 'Are you sure you want to PERMANENTLY Deletes ALL Individual Redirects?', 'quick-pagepost-redirect-plugin' ),
 					'msgDuplicate'               => __( 'Redirect could not be saved as a redirect already exists with the same Request URL.', 'quick-pagepost-redirect-plugin' ),
 					'msgDeleteConfirm'           => __( 'Are you sure you want to delete this redirect?', 'quick-pagepost-redirect-plugin' ),
 					'msgErrorSave'               => __( 'Error Saving Redirect\nTry refreshing the page and trying again.', 'quick-pagepost-redirect-plugin' ),
@@ -1205,25 +1207,25 @@ class quick_page_post_reds {
 					<th scope="row"><label><?php echo __( 'Make ALL Redirects this type:', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
 					<td><select name="ppr_override-redirect-type">
 							<option value="0"><?php echo __( 'Use Individual Settings', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="301" 
+							<option value="301"
 							<?php
 							if ( get_option( 'ppr_override-redirect-type' ) == '301' ) {
 								echo ' selected="selected" ';}
 							?>
 								>301 <?php echo __( 'Permanant Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="302" 
+							<option value="302"
 							<?php
 							if ( get_option( 'ppr_override-redirect-type' ) == '302' ) {
 								echo ' selected="selected" ';}
 							?>
 								>302 <?php echo __( 'Temporary Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="307" 
+							<option value="307"
 							<?php
 							if ( get_option( 'ppr_override-redirect-type' ) == '307' ) {
 								echo ' selected="selected" ';}
 							?>
 								>307 <?php echo __( 'Temporary Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="meta" 
+							<option value="meta"
 							<?php
 							if ( get_option( 'ppr_override-redirect-type' ) == 'meta' ) {
 								echo ' selected="selected" ';}
@@ -1666,7 +1668,7 @@ class quick_page_post_reds {
 				}
 			}
 		}
-		$this->ppr_newwindow = $theArrayNW;
+		// $this->ppr_newwindow = $theArrayNW;
 		$this->ppr_nofollow  = $theArrayNF;
 		return $theArray;
 	}
@@ -2224,6 +2226,11 @@ class quick_page_post_reds {
 	}
 
 	function getAddress( $home = '' ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			// return the relative address for WordPress CLI.
+			return $_SERVER['REQUEST_URI'];
+		}
+
 		// utility function to get the full address of the current request - credit: http://www.phpro.org/examples/Get-Full-URL.html
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
 			$_SERVER['HTTPS'] = '';
@@ -2233,6 +2240,10 @@ class quick_page_post_reds {
 	}
 
 	function getQAddress( $home = '' ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return '';
+		}
+
 		// utility function to get the protocol and host of the current request
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
 			$_SERVER['HTTPS'] = '';
@@ -2307,7 +2318,7 @@ class quick_page_post_reds {
 			$index          = false;
 
 			/*
-			These are the URL matching checks to see if the request should be redirected.
+			 * These are the URL matching checks to see if the request should be redirected.
 			 * They trickle down to the less likely scenarios last - tries to recover a redirect if the
 			 * user just forgot things like ending slash or used wrong protocol, etc.
 			 */
@@ -2360,7 +2371,7 @@ class quick_page_post_reds {
 				// Finally, if we have a matched request URL, get ready to redirect.
 				$val = isset( $haystack[ $index ] ) ? $haystack[ $index ] : false;
 				if ( $val ) {
-					// if global setting to make all redirects go to a specific URL is set, that takes priority.
+					// If global setting to make all redirects go to a specific URL is set, that takes priority.
 					$useURL  = $this->pproverride_URL != '' ? $this->pproverride_URL : $val;
 					$useURL .= apply_filters( 'qppr_filter_quickredirect_append_QS_data', $finalQS ); // add QS back or use filter to set to blank.
 					$useURL  = apply_filters( 'qppr_filter_quickredirect_url', $useURL, $index ); // final URL filter
