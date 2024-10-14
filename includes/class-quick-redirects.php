@@ -19,7 +19,6 @@ class quick_page_post_reds {
 	public $thepprmeta;
 	public $quickppr_redirects;
 	public $tohash;
-	public $fcmlink;
 	public $adminlink;
 	public $ppr_all_redir_array;
 	public $homelink;
@@ -62,7 +61,6 @@ class quick_page_post_reds {
 		$this->pprmeta_seconds           = get_option( 'qppr_meta_addon_sec', get_option( 'ppr_meta-seconds', 0 ) );
 		$this->pproverride_casesensitive = get_option( 'ppr_override-casesensitive' );
 		$this->adminlink                 = admin_url( '/', 'admin' );
-		$this->fcmlink                   = 'http://www.anadnet.com/quick-pagepost-redirect-plugin/';
 		$this->ppr_metaurl               = '';
 		$this->updatemsg                 = '';
 		$this->pprshowcols               = get_option( 'ppr_show-columns', '1' );
@@ -134,7 +132,7 @@ class quick_page_post_reds {
 	 * @since 5.1.2
 	 */
 	function qppr_load_textdomain() {
-		load_plugin_textdomain( 'quick-pagepost-redirect-plugin', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );
+		load_plugin_textdomain( 'quick-redirects', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -278,8 +276,8 @@ class quick_page_post_reds {
 			'options' => array(
 				'content'  => sprintf(
 					'<h3>%s</h3><p>%s</p>',
-					__( 'New Meta Redirect options.', 'quick-pagepost-redirect-plugin' ),
-					__( 'Please view the Help Tab above to see more information about the Meta Redirect Settings.', 'quick-pagepost-redirect-plugin' )
+					__( 'New Meta Redirect options.', 'quick-redirects' ),
+					__( 'Please view the Help Tab above to see more information about the Meta Redirect Settings.', 'quick-redirects' )
 				),
 				'position' => array(
 					'edge'  => 'top',
@@ -296,9 +294,9 @@ class quick_page_post_reds {
 			'options' => array(
 				'content'  => sprintf(
 					'<h3>%s</h3><p>%s</p><p>%s</p>',
-					__( 'New Layout of Existing Redirects', 'quick-pagepost-redirect-plugin' ),
-					__( 'The existing <strong>Quick Redirects</strong> are now laid out in a list format instead of form fields. When you have a lot of Redirects, this helps eliminate the "max_input_vars" configuration issue where redirects were not saving correctly.', 'quick-pagepost-redirect-plugin' ),
-					__( 'To edit an existing redirect, click the pencil icon', 'quick-pagepost-redirect-plugin' ) . ' (<span class="dashicons dashicons-edit"></span>) ' . __( 'and the row will become editable. Click the trash can icon', 'quick-pagepost-redirect-plugin' ) . ' (<span class="dashicons dashicons-trash"></span>) ' . __( 'and the redirect will be deleted. Click the trash can icon', 'quick-pagepost-redirect-plugin' )
+					__( 'New Layout of Existing Redirects', 'quick-redirects' ),
+					__( 'The existing <strong>Quick Redirects</strong> are now laid out in a list format instead of form fields. When you have a lot of Redirects, this helps eliminate the "max_input_vars" configuration issue where redirects were not saving correctly.', 'quick-redirects' ),
+					__( 'To edit an existing redirect, click the pencil icon', 'quick-redirects' ) . ' (<span class="dashicons dashicons-edit"></span>) ' . esc_html__( 'and the row will become editable. Click the trash can icon', 'quick-redirects' ) . ' (<span class="dashicons dashicons-trash"></span>) ' . esc_html__( 'and the redirect will be deleted. Click the trash can icon', 'quick-redirects' )
 				),
 				'position' => array(
 					'edge'  => 'bottom',
@@ -315,10 +313,10 @@ class quick_page_post_reds {
 			'options' => array(
 				'content'  => sprintf(
 					'<h3>%s</h3><p>%s</p><p>%s</p><p>%s</p>',
-					__( 'New Option to Use jQuery', 'quick-pagepost-redirect-plugin' ),
-					__( 'To increase the effectiveness of the plugin\'s ability to add new window and nofollow functionality, you can use the jQuery option.', 'quick-pagepost-redirect-plugin' ),
-					__( 'This adds JavaScript/jQuery scripting to check the links in the output HTML of the page and add the correct functionality if needed.', 'quick-pagepost-redirect-plugin' ),
-					__( 'If you experience JavaScript/jQuery conflicts, try turning this option off.', 'quick-pagepost-redirect-plugin' )
+					__( 'New Option to Use jQuery', 'quick-redirects' ),
+					__( 'To increase the effectiveness of the plugin\'s ability to add new window and nofollow functionality, you can use the jQuery option.', 'quick-redirects' ),
+					__( 'This adds JavaScript/jQuery scripting to check the links in the output HTML of the page and add the correct functionality if needed.', 'quick-redirects' ),
+					__( 'If you experience JavaScript/jQuery conflicts, try turning this option off.', 'quick-redirects' )
 				),
 				'position' => array(
 					'edge'  => 'left',
@@ -450,7 +448,7 @@ class quick_page_post_reds {
 		if ( isset( $_POST['submit_301'] ) ) {
 			if ( check_admin_referer( 'add_qppr_redirects' ) ) {
 				$this->quickppr_redirects = $this->save_redirects( $_POST['quickppr_redirects'] );
-				$this->updatemsg          = __( 'Quick Redirects Updated.', 'quick-pagepost-redirect-plugin' );
+				$this->updatemsg          = esc_html__( 'Quick Redirects Updated.', 'quick-redirects' );
 				$this->qppr_try_to_clear_cache_plugins();
 			}
 		} //if submitted and verified, process the data
@@ -555,7 +553,7 @@ class quick_page_post_reds {
 	}
 
 	function set_custom_edit_qppr_columns( $columns ) {
-		$columns['qppr_redirect'] = __( 'Redirect', 'quick-pagepost-redirect-plugin' );
+		$columns['qppr_redirect'] = esc_html__( 'Redirect', 'quick-redirects' );
 		return $columns;
 	}
 
@@ -623,7 +621,7 @@ class quick_page_post_reds {
 			if ( ! in_array( $type, $ptypesNOTok ) ) {
 				$context  = apply_filters( 'appip_metabox_context_filter', 'normal' );
 				$priority = apply_filters( 'appip_metabox_priority_filter', 'high' );
-				add_meta_box( 'edit-box-ppr', __( 'Quick Page/Post Redirect', 'quick-pagepost-redirect-plugin' ), array( $this, 'edit_box_ppr_1' ), $type, $context, $priority );
+				add_meta_box( 'edit-box-ppr', esc_html__( 'Quick Page/Post Redirect', 'quick-redirects' ), array( $this, 'edit_box_ppr_1' ), $type, $context, $priority );
 			}
 		}
 	}
@@ -662,17 +660,17 @@ class quick_page_post_reds {
 					'security'                   => $ajax_add_nonce,
 					'securityDelete'             => $secDeleteNonce,
 					'protocols'                  => $protocols,
-					'msgAllDeleteConfirm'        => __( 'Are you sure you want to PERMANENTLY Delete ALL Redirects and Settings (this cannot be undone)?', 'quick-pagepost-redirect-plugin' ),
-					'msgQuickDeleteConfirm'      => __( 'Are you sure you want to PERMANENTLY Delete ALL Quick Redirects?', 'quick-pagepost-redirect-plugin' ),
-					'msgIndividualDeleteConfirm' => __( 'Are you sure you want to PERMANENTLY Deletes ALL Individual Redirects?', 'quick-pagepost-redirect-plugin' ),
-					'msgDuplicate'               => __( 'Redirect could not be saved as a redirect already exists with the same Request URL.', 'quick-pagepost-redirect-plugin' ),
-					'msgDeleteConfirm'           => __( 'Are you sure you want to delete this redirect?', 'quick-pagepost-redirect-plugin' ),
-					'msgErrorSave'               => __( 'Error Saving Redirect\nTry refreshing the page and trying again.', 'quick-pagepost-redirect-plugin' ),
+					'msgAllDeleteConfirm'        => esc_html__( 'Are you sure you want to PERMANENTLY Delete ALL Redirects and Settings (this cannot be undone)?', 'quick-redirects' ),
+					'msgQuickDeleteConfirm'      => esc_html__( 'Are you sure you want to PERMANENTLY Delete ALL Quick Redirects?', 'quick-redirects' ),
+					'msgIndividualDeleteConfirm' => esc_html__( 'Are you sure you want to PERMANENTLY Deletes ALL Individual Redirects?', 'quick-redirects' ),
+					'msgDuplicate'               => esc_html__( 'Redirect could not be saved as a redirect already exists with the same Request URL.', 'quick-redirects' ),
+					'msgDeleteConfirm'           => esc_html__( 'Are you sure you want to delete this redirect?', 'quick-redirects' ),
+					'msgErrorSave'               => esc_html__( 'Error Saving Redirect\nTry refreshing the page and trying again.', 'quick-redirects' ),
 					'msgSelect'                  => 'select a file',
-					'msgFileType'                => __( 'File type not allowed,\nAllowed file type: *.txt', 'quick-pagepost-redirect-plugin' ),
+					'msgFileType'                => esc_html__( 'File type not allowed,\nAllowed file type: *.txt', 'quick-redirects' ),
 					'adminURL'                   => admin_url( 'admin.php' ),
 					'ajaxurl'                    => admin_url( 'admin-ajax.php' ),
-					'error'                      => __( 'Please add at least one redirect before submitting form', 'quick-pagepost-redirect-plugin' ),
+					'error'                      => esc_html__( 'Please add at least one redirect before submitting form', 'quick-redirects' ),
 				)
 			);
 		}
@@ -779,8 +777,8 @@ class quick_page_post_reds {
 		include_once ABSPATH . WPINC . '/feed.php';
 		echo '
 		<div class="wrap">
-			<h2>' . __( 'Quick Page/Post Redirect FAQs/Help', 'quick-pagepost-redirect-plugin' ) . '</h2>
-			<div align="left"><p>' . __( 'The FAQS are now on a feed that can be updated on the fly. If you have a question and don\'t see an answer, please send an email to <a href="mailto:info@anadnet.com">info@anadnet.com</a> and ask your question. If it is relevant to the plugin, it will be added to the FAQs feed so it will show up here. Please be sure to include the plugin you are asking a question about (Quick Page/Post Redirect Plugin) and any other information like your WordPress version and examples if the plugin is not working correctly for you. THANKS!', 'quick-pagepost-redirect-plugin' ) . '</p>
+			<h2>' . esc_html__( 'Quick Page/Post Redirect FAQs/Help', 'quick-redirects' ) . '</h2>
+			<div align="left"><p>' . esc_html__( 'The FAQS are now on a feed that can be updated on the fly. If you have a question and don\'t see an answer, please send an email to <a href="mailto:info@anadnet.com">info@anadnet.com</a> and ask your question. If it is relevant to the plugin, it will be added to the FAQs feed so it will show up here. Please be sure to include the plugin you are asking a question about (Quick Page/Post Redirect Plugin) and any other information like your WordPress version and examples if the plugin is not working correctly for you. THANKS!', 'quick-redirects' ) . '</p>
 			<hr noshade color="#C0C0C0" size="1" />
 		';
 		$rss         = fetch_feed( 'http://www.anadnet.com/?feed=qppr_faqs&ver=' . $this->ppr_curr_version . '&loc=' . urlencode( $this->homelink ) );
@@ -799,11 +797,11 @@ class quick_page_post_reds {
 				$linkcontent[] = '<li class="faq-item"><a name="faq-' . $aqr . '"></a><h3 class="qa"><span class="qa">Q. </span>' . esc_html( $item->get_title() ) . '</h3><div class="qa-content"><span class="qa answer">A. </span>' . $item->get_content() . '</div><div class="toplink"><a href="#faq-top">top &uarr;</a></li>';
 			endforeach;
 		}
-		$output  = '<a name="faq-top"></a><h2>' . __( 'Table of Contents', 'quick-pagepost-redirect-plugin' ) . '</h2>';
+		$output  = '<a name="faq-top"></a><h2>' . esc_html__( 'Table of Contents', 'quick-redirects' ) . '</h2>';
 		$output .= '<ol class="qppr-faq-links">';
 		$output .= implode( "\n", $linkfaq );
 		$output .= '</ol>';
-		$output .= '<h2>' . __( 'Questions/Answers', 'quick-pagepost-redirect-plugin' ) . '</h2>';
+		$output .= '<h2>' . esc_html__( 'Questions/Answers', 'quick-redirects' ) . '</h2>';
 		$output .= '<ul class="qppr-faq-answers">';
 		$output .= implode( "\n", $linkcontent );
 		$output .= '</ul>';
@@ -815,8 +813,8 @@ class quick_page_post_reds {
 	function ppr_summary_page() {
 		?>
 <div class="wrap">
-	<h2><?php echo __( 'Quick Page Post Redirect Summary', 'quick-pagepost-redirect-plugin' ); ?></h2>
-	<p><?php echo __( 'This is a summary of Individual &amp; Quick 301 Redirects.', 'quick-pagepost-redirect-plugin' ); ?></p>
+	<h2><?php echo esc_html__( 'Quick Page Post Redirect Summary', 'quick-redirects' ); ?></h2>
+	<p><?php echo esc_html__( 'This is a summary of Individual &amp; Quick 301 Redirects.', 'quick-redirects' ); ?></p>
 	<br/>
 		<?php if ( $this->updatemsg != '' ) { ?>
 	<div class="updated settings-error" id="setting-error-settings_updated">
@@ -824,27 +822,27 @@ class quick_page_post_reds {
 	</div>
 	<?php } ?>
 		<?php $this->updatemsg = ''; ?>
-	<h2 style="font-size:20px;"><?php echo __( 'Summary', 'quick-pagepost-redirect-plugin' ); ?></h2>
+	<h2 style="font-size:20px;"><?php echo esc_html__( 'Summary', 'quick-redirects' ); ?></h2>
 	<div align="left">
 		<?php
 		if ( $this->pproverride_active == '1' ) {
-			echo '<div class="ppr-acor" style="margin:1px 0;width: 250px;font-weight: bold;padding: 2px;">' . __( 'Acitve Override is on - All Redirects are OFF!', 'quick-pagepost-redirect-plugin' ) . '</div>';}
+			echo '<div class="ppr-acor" style="margin:1px 0;width: 250px;font-weight: bold;padding: 2px;">' . esc_html__( 'Acitve Override is on - All Redirects are OFF!', 'quick-redirects' ) . '</div>';}
 		if ( $this->pproverride_nofollow == '1' ) {
-			echo '<div class="ppr-nfor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . __( 'No Follow Override is on!', 'quick-pagepost-redirect-plugin' ) . '</div>';}
+			echo '<div class="ppr-nfor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . esc_html__( 'No Follow Override is on!', 'quick-redirects' ) . '</div>';}
 		if ( $this->pproverride_newwin == '1' ) {
-			echo '<div class="ppr-nwor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . __( 'New Window Override is on!', 'quick-pagepost-redirect-plugin' ) . '</div>';}
+			echo '<div class="ppr-nwor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . esc_html__( 'New Window Override is on!', 'quick-redirects' ) . '</div>';}
 		if ( $this->pproverride_rewrite == '1' ) {
-			echo '<div class="ppr-rrlor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . __( 'Rewrite Override is on!', 'quick-pagepost-redirect-plugin' ) . '</div>';}
+			echo '<div class="ppr-rrlor" style="margin:1px 0;width: 200px;font-weight: bold;padding: 2px;">' . esc_html__( 'Rewrite Override is on!', 'quick-redirects' ) . '</div>';}
 			$labels   = array(
-				__( 'ID', 'quick-pagepost-redirect-plugin' ),
-				__( 'post type', 'quick-pagepost-redirect-plugin' ),
-				__( 'active', 'quick-pagepost-redirect-plugin' ),
-				__( 'no follow', 'quick-pagepost-redirect-plugin' ),
-				__( 'new window', 'quick-pagepost-redirect-plugin' ),
-				__( 'type', 'quick-pagepost-redirect-plugin' ),
-				__( 'rewrite link', 'quick-pagepost-redirect-plugin' ),
-				__( 'original URL', 'quick-pagepost-redirect-plugin' ),
-				__( 'redirect to URL', 'quick-pagepost-redirect-plugin' ),
+				esc_html__( 'ID', 'quick-redirects' ),
+				esc_html__( 'post type', 'quick-redirects' ),
+				esc_html__( 'active', 'quick-redirects' ),
+				esc_html__( 'no follow', 'quick-redirects' ),
+				esc_html__( 'new window', 'quick-redirects' ),
+				esc_html__( 'type', 'quick-redirects' ),
+				esc_html__( 'rewrite link', 'quick-redirects' ),
+				esc_html__( 'original URL', 'quick-redirects' ),
+				esc_html__( 'redirect to URL', 'quick-redirects' ),
 			);
 			$labelsTD = array(
 				'<span>' . $labels[0] . ' :</span>',
@@ -976,57 +974,44 @@ class quick_page_post_reds {
 	function ppr_import_export_page() {
 		if ( isset( $_GET['update'] ) ) {
 			if ( sanitize_key( $_GET['update'] ) == '4' ) {
-				$this->updatemsg = '' . __( 'Quick Redirects Imported & Replaced.', 'quick-pagepost-redirect-plugin' ) . '';}
+				$this->updatemsg = '' . esc_html__( 'Quick Redirects Imported & Replaced.', 'quick-redirects' ) . '';}
 			if ( sanitize_key( $_GET['update'] ) == '5' ) {
-				$this->updatemsg = '' . __( 'Quick Redirects Imported & Added to Existing Redirects.', 'quick-pagepost-redirect-plugin' ) . '';}
+				$this->updatemsg = '' . esc_html__( 'Quick Redirects Imported & Added to Existing Redirects.', 'quick-redirects' ) . '';}
 		}
 		echo '<div class="wrap">';
-		echo '	<h2>' . __( 'Import/Export Redirects', 'quick-pagepost-redirect-plugin' ) . '</h2>';
+		echo '	<h2>' . esc_html__( 'Import/Export Redirects', 'quick-redirects' ) . '</h2>';
 		if ( $this->updatemsg != '' ) {
 			echo '	<div class="updated settings-error" id="setting-error-settings_updated"><p><strong>' . $this->updatemsg . '</strong></p></div>';
 		}
 		$this->updatemsg = '';
 		?>
 		<div class="qppr-content">
-			<div class="qppr-sidebar">
-				<div class="pprdonate">
-					<div>
-						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-							<input name="cmd" value="_s-xclick" type="hidden"/>
-							<input name="hosted_button_id" value="8274582" type="hidden"/>
-							<input alt="PayPal - The safer, easier way to pay online!" name="submit" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" type="image">
-							<img src="https://www.paypal.com/en_US/i/scr/pixel.gif" alt="" border="0" height="1" width="1" />
-						</form>
-					</div>
-					<?php echo __( 'If you enjoy or find any of our plugins useful, please donate a few dollars to help with future development and updates. We thank you in advance.', 'quick-pagepost-redirect-plugin' ); ?>
-				</div>
-			</div>
 			<div class="qppr-left">
 				<table style="border-collapse: collapse" class="form-table">
 				<tr valign="top">
-					<td><label class="qppr-label"><strong><?php echo __( 'Export Redirects', 'quick-pagepost-redirect-plugin' ); ?></strong></label>
-					<p><?php echo __( 'You should back-up your redirect regularly in case something happens to the database.', 'quick-pagepost-redirect-plugin' ); ?></p>
-						<p><?php echo __( 'Please use the below buttons to make a back-up as either encoded (unreadable) or pipe separated', 'quick-pagepost-redirect-plugin' ); ?> (<code>|</code>).</p>
-						<br /><p><input class="button button-primary qppr-export-quick-redirects" type="button" name="qppr-export-quick-redirects" value="<?php echo __( 'EXPORT all Quick Redirects (Encoded)', 'quick-pagepost-redirect-plugin' ); ?>" onclick="document.location='<?php echo wp_nonce_url( admin_url( 'admin.php?page=redirect-options&qppr-file-type=encoded' ) . '&action=export-quick-redirects-file', 'export-redirects-qppr' ); ?>';" /></p>
-						<p><?php echo __( 'OR', 'quick-pagepost-redirect-plugin' ); ?></p>
-						<p><input class="button button-primary qppr-export-quick-redirects" type="button" name="qppr-export-quick-redirects" value="<?php echo __( 'EXPORT all Quick Redirects (PIPE Separated)', 'quick-pagepost-redirect-plugin' ); ?>" onclick="document.location='<?php echo wp_nonce_url( admin_url( 'admin.php?page=redirect-options' ) . '&action=export-quick-redirects-file&qppr-file-type=pipe', 'export-redirects-qppr' ); ?>';" /></p>
+					<td><label class="qppr-label"><strong><?php echo esc_html__( 'Export Redirects', 'quick-redirects' ); ?></strong></label>
+					<p><?php echo esc_html__( 'You should back-up your redirect regularly in case something happens to the database.', 'quick-redirects' ); ?></p>
+						<p><?php echo esc_html__( 'Please use the below buttons to make a back-up as either encoded (unreadable) or pipe separated', 'quick-redirects' ); ?> (<code>|</code>).</p>
+						<br /><p><input class="button button-primary qppr-export-quick-redirects" type="button" name="qppr-export-quick-redirects" value="<?php echo esc_html__( 'EXPORT all Quick Redirects (Encoded)', 'quick-redirects' ); ?>" onclick="document.location='<?php echo wp_nonce_url( admin_url( 'admin.php?page=redirect-options&qppr-file-type=encoded' ) . '&action=export-quick-redirects-file', 'export-redirects-qppr' ); ?>';" /></p>
+						<p><?php echo esc_html__( 'OR', 'quick-redirects' ); ?></p>
+						<p><input class="button button-primary qppr-export-quick-redirects" type="button" name="qppr-export-quick-redirects" value="<?php echo esc_html__( 'EXPORT all Quick Redirects (PIPE Separated)', 'quick-redirects' ); ?>" onclick="document.location='<?php echo wp_nonce_url( admin_url( 'admin.php?page=redirect-options' ) . '&action=export-quick-redirects-file&qppr-file-type=pipe', 'export-redirects-qppr' ); ?>';" /></p>
 					</td>
 				</tr>
 				<tr valign="top">
 					<th scope="row" colspan="2"><hr noshade color="#EAEAEA" size="1"></th>
 				</tr>
 				<tr valign="top">
-					<td><label class="qppr-label"><strong><?php echo __( 'Import Redirects', 'quick-pagepost-redirect-plugin' ); ?></strong></label>
-					<p><?php echo __( 'If you want to replace or restore redirects from a file, use the "Restore" option.', 'quick-pagepost-redirect-plugin' ); ?></p>
-					<p><?php echo __( 'To add new redirects in bulk use the "Add To" option - NOTE: to Add To redirects, the file must be pipe dilimited ', 'quick-pagepost-redirect-plugin' ); ?> (<code>|</code>).</p>
+					<td><label class="qppr-label"><strong><?php echo esc_html__( 'Import Redirects', 'quick-redirects' ); ?></strong></label>
+					<p><?php echo esc_html__( 'If you want to replace or restore redirects from a file, use the "Restore" option.', 'quick-redirects' ); ?></p>
+					<p><?php echo esc_html__( 'To add new redirects in bulk use the "Add To" option - NOTE: to Add To redirects, the file must be pipe dilimited ', 'quick-redirects' ); ?> (<code>|</code>).</p>
 						<br/>
-						<input class="button-primary qppr-import-quick-redirects" type="button" id="qppr-import-quick-redirects-button" name="qppr-import-quick-redirects" value="<?php echo __( 'RESTORE Saved Quick Redirects', 'quick-pagepost-redirect-plugin' ); ?>" />
-						<?php echo __( 'OR', 'quick-pagepost-redirect-plugin' ); ?>
-						<input class="button-primary qppr_addto_qr" type="button" id="qppr_addto_qr_button" name="qppr_addto_qr" value="<?php echo __( 'ADD TO Quick Redirects', 'quick-pagepost-redirect-plugin' ); ?>" />
+						<input class="button-primary qppr-import-quick-redirects" type="button" id="qppr-import-quick-redirects-button" name="qppr-import-quick-redirects" value="<?php echo esc_html__( 'RESTORE Saved Quick Redirects', 'quick-redirects' ); ?>" />
+						<?php echo esc_html__( 'OR', 'quick-redirects' ); ?>
+						<input class="button-primary qppr_addto_qr" type="button" id="qppr_addto_qr_button" name="qppr_addto_qr" value="<?php echo esc_html__( 'ADD TO Quick Redirects', 'quick-redirects' ); ?>" />
 						<div id="qppr_import_form" class="hide-if-js">
 							<form action="<?php echo admin_url( 'admin.php?page=redirect-import-export' ); ?>" method="post" enctype="multipart/form-data">
 								<p style="margin:1em 0;">
-									<label><?php echo __( 'Select Quick Redirects file to import:', 'quick-pagepost-redirect-plugin' ); ?></label>
+									<label><?php echo esc_html__( 'Select Quick Redirects file to import:', 'quick-redirects' ); ?></label>
 									<input type="file" name="qppr_file" onchange="qppr_check_file(this);" />
 								</p>
 								<p class="submit">
@@ -1037,22 +1022,22 @@ class quick_page_post_reds {
 						</div>
 						<div id="qppr_addto_form" class="hide-if-js">
 							<form action="<?php echo admin_url( 'admin.php?page=redirect-import-export' ); ?>" method="post" enctype="multipart/form-data">
-								<p style="margin:.5em 0 1em 1em;color:#444;"> <?php echo __( 'The import file should be a text file with one rediect per line, PIPE separated, in this format:', 'quick-pagepost-redirect-plugin' ); ?><br/>
+								<p style="margin:.5em 0 1em 1em;color:#444;"> <?php echo esc_html__( 'The import file should be a text file with one rediect per line, PIPE separated, in this format:', 'quick-redirects' ); ?><br/>
 									<br/>
-									<code><?php echo __( 'redirect|destination|newwindow|nofollow', 'quick-pagepost-redirect-plugin' ); ?></code><br/>
-									<br/><?php echo __( 'for Example:', 'quick-pagepost-redirect-plugin' ); ?>
+									<code><?php echo esc_html__( 'redirect|destination|newwindow|nofollow', 'quick-redirects' ); ?></code><br/>
+									<br/><?php echo esc_html__( 'for Example:', 'quick-redirects' ); ?>
 									<br/><br/>
-									<code><?php echo __( '/old-location.htm|http://some.com/new-destination/|0|1', 'quick-pagepost-redirect-plugin' ); ?></code><br />
-									<code><?php echo __( '/dontate/|http://example.com/destination/|1|1', 'quick-pagepost-redirect-plugin' ); ?></code><br/>
+									<code><?php echo esc_html__( '/old-location.htm|http://some.com/new-destination/|0|1', 'quick-redirects' ); ?></code><br />
+									<code><?php echo esc_html__( '/dontate/|http://example.com/destination/|1|1', 'quick-redirects' ); ?></code><br/>
 									<br/>
-									<strong><?php echo __( 'IMPORTANT:', 'quick-pagepost-redirect-plugin' ); ?></strong> <?php echo __( 'Make Sure any destination URLs that have a PIPE in the querystring data are URL encoded before adding them!', 'quick-pagepost-redirect-plugin' ); ?><br/>
+									<strong><?php echo esc_html__( 'IMPORTANT:', 'quick-redirects' ); ?></strong> <?php echo esc_html__( 'Make Sure any destination URLs that have a PIPE in the querystring data are URL encoded before adding them!', 'quick-redirects' ); ?><br/>
 									<br/>
-									<label><?php echo __( 'Select Quick Redirects file to import:', 'quick-pagepost-redirect-plugin' ); ?></label>
+									<label><?php echo esc_html__( 'Select Quick Redirects file to import:', 'quick-redirects' ); ?></label>
 									<input type="file" name="qppr_file_add" onchange="qppr_check_file(this);" />
 								</p>
 								<p class="submit">
 									<?php wp_nonce_field( 'import_redirects_add_qppr' ); ?>
-									<input class="button button-primary" type="submit" id="import_redirects_add_qppr" name="import_redirects_add_qppr" value="<?php echo __( 'ADD TO Current Quick Redirects', 'quick-pagepost-redirect-plugin' ); ?>" />
+									<input class="button button-primary" type="submit" id="import_redirects_add_qppr" name="import_redirects_add_qppr" value="<?php echo esc_html__( 'ADD TO Current Quick Redirects', 'quick-redirects' ); ?>" />
 								</p>
 							</form>
 						</div></td>
@@ -1071,220 +1056,207 @@ class quick_page_post_reds {
 	function ppr_settings_page() {
 		if ( isset( $_GET['update'] ) && sanitize_key( $_GET['update'] ) != '' ) {
 			if ( sanitize_key( $_GET['update'] ) == '3' ) {
-				$this->updatemsg = __( 'All Quick Redirects deleted from database.', 'quick-pagepost-redirect-plugin' );}
+				$this->updatemsg = esc_html__( 'All Quick Redirects deleted from database.', 'quick-redirects' );}
 			if ( sanitize_key( $_GET['update'] ) == '2' ) {
-				$this->updatemsg = __( 'All Individual Redirects deleted from database.', 'quick-pagepost-redirect-plugin' );}
+				$this->updatemsg = esc_html__( 'All Individual Redirects deleted from database.', 'quick-redirects' );}
 			if ( sanitize_key( $_GET['update'] ) == '4' ) {
-				$this->updatemsg = __( 'Quick Redirects Imported & Replaced.', 'quick-pagepost-redirect-plugin' );}
+				$this->updatemsg = esc_html__( 'Quick Redirects Imported & Replaced.', 'quick-redirects' );}
 			if ( sanitize_key( $_GET['update'] ) == '5' ) {
-				$this->updatemsg = __( 'Quick Redirects Imported & Added to Existing Redirects.', 'quick-pagepost-redirect-plugin' );}
+				$this->updatemsg = esc_html__( 'Quick Redirects Imported & Added to Existing Redirects.', 'quick-redirects' );}
 			if ( sanitize_key( $_GET['update'] ) == '6' ) {
-				$this->updatemsg = __( 'All Redirects and Settings deleted from database', 'quick-pagepost-redirect-plugin' );}
+				$this->updatemsg = esc_html__( 'All Redirects and Settings deleted from database', 'quick-redirects' );}
 			if ( sanitize_key( $_GET['update'] ) == '0' ) {
-				$this->updatemsg = __( 'There was an problem with your last request. Please reload the page and try again.', 'quick-pagepost-redirect-plugin' );}
+				$this->updatemsg = esc_html__( 'There was an problem with your last request. Please reload the page and try again.', 'quick-redirects' );}
 		}
 		?>
-<div class="wrap" style="position:relative;">
-	<h2><?php echo __( 'Quick Page Post Redirect Options', 'quick-pagepost-redirect-plugin' ); ?></h2>
-		<?php if ( $this->updatemsg != '' ) { ?>
-		<div class="updated" id="setting-error-settings_updated">
-			<p><strong><?php echo esc_html( $this->updatemsg ); ?></strong></p>
-		</div>
-	<?php } ?>
-		<?php $this->updatemsg = '';// reset message; ?>
-	<div class="qppr-content">
-		<div class="qppr-sidebar">
-			<div class="pprdonate">
-				<div>
-					<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-						<input name="cmd" value="_s-xclick" type="hidden"/>
-						<input name="hosted_button_id" value="8274582" type="hidden"/>
-						<input alt="PayPal - The safer, easier way to pay online!" name="submit" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" type="image">
-						<img src="https://www.paypal.com/en_US/i/scr/pixel.gif" alt="" border="0" height="1" width="1" />
-					</form>
+		<div class="wrap" style="position:relative;">
+			<h2><?php echo esc_html__( 'Quick Page Post Redirect Options', 'quick-redirects' ); ?></h2>
+			<?php if ( $this->updatemsg != '' ) { ?>
+				<div class="updated" id="setting-error-settings_updated">
+					<p><strong><?php echo esc_html( $this->updatemsg ); ?></strong></p>
 				</div>
-				<?php echo __( 'If you enjoy or find any of our plugins useful, please donate a few dollars to help with future development and updates. We thank you in advance.', 'quick-pagepost-redirect-plugin' ); ?>
+			<?php } ?>
+			<?php $this->updatemsg = '';// reset message; ?>
+			<div class="qppr-content">
+				<div class="qppr-left">
+				<form method="post" action="options.php" class="qpprform">
+					<?php settings_fields( 'ppr-settings-group' ); ?>
+					<table class="form-table">
+						<tr>
+							<th scope="row" colspan="2" class="qppr-no-padding"><hr noshade color="#EAEAEA" size="1"></th>
+						</tr>
+						<tr>
+							<th scope="row" colspan="2"><h2 style="display:inline-block;"><?php echo esc_html__( 'Basic Settings', 'quick-redirects' ); ?></h2></th>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Use with Custom Post Types?', 'quick-redirects' ); ?></label></th>
+							<td><input type="checkbox" name="ppr_use-custom-post-types" value="1"
+							<?php
+							if ( get_option( 'ppr_use-custom-post-types' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/></td>
+						</tr>
+						<tr>
+							<th scope="row"><label><span style="color:#FF0000;font-weight:bold;font-size:100%;margin-left:0px;"><?php echo esc_html__( 'Hide', 'quick-redirects' ); ?></span> <?php echo esc_html__( 'meta box for following Post Types:', 'quick-redirects' ); ?></label></th>
+							<td>
+							<?php
+								$ptypes   = get_post_types();
+								$ptypesok = $this->pprptypes_ok;
+							if ( ! is_array( $ptypesok ) ) {
+								$ptypesok = get_option( 'ppr_qpprptypeok' );}
+							if ( ! is_array( $ptypesok ) ) {
+								$ptypesok = array();}
+								$ptypeHTML = '<div class="qppr-posttypes">';
+							foreach ( $ptypes as $ptype ) {
+								if ( $ptype != 'nav_menu_item' && $ptype != 'attachment' && $ptype != 'revision' ) {
+									if ( in_array( $ptype, $ptypesok ) ) {
+										$ptypecheck = ' checked="checked"';
+									} else {
+										$ptypecheck = '';
+									}
+									$ptypeHTML .= '<div class="qppr-ptype"><input class="qppr-ptypecb" type="checkbox" name="ppr_qpprptypeok[]" value="' . esc_attr( $ptype ) . '"' . esc_attr( $ptypecheck ) . ' /> <div class="ppr-type-name">' . esc_html( $ptype ) . '</div></div>';
+								}
+							}
+								$ptypeHTML .= '</div>';
+							echo $ptypeHTML;
+							?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Show Column Headers?', 'quick-redirects' ); ?></label></th>
+							<td><input type="checkbox" id ="ppr_show-columns" name="ppr_show-columns" value="1"
+							<?php
+							if ( get_option( 'ppr_show-columns' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/> <span><?php echo esc_html__( 'Show Columns on list pages for set up redirects.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+
+							<th scope="row"><label><?php echo esc_html__( 'Use jQuery?', 'quick-redirects' ); ?></label></th>
+							<td><input type="checkbox" id ="ppr_use-jquery" name="ppr_use-jquery" value="1"
+							<?php
+							if ( get_option( 'ppr_use-jquery' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/> <span><?php echo esc_html__( 'Increases effectiveness of plugin. If you have a jQuery conflict, try turning this off.', 'quick-redirects' ); ?></span><br /><span style="margin:0;"><?php echo esc_html__( 'Uses jQuery to add the "New Window" and "No Follow" attributes to links.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row" colspan="2" class="qppr-no-padding"><hr noshade color="#EAEAEA" size="1"></th>
+						</tr>
+						<tr>
+							<th scope="row" colspan="2"><h2 style="font-size:20px;display:inline-block;"><?php echo esc_html__( 'Master Override Options', 'quick-redirects' ); ?></h2><span><?php echo esc_html__( '<strong>NOTE: </strong>The below settings will override all individual settings.', 'quick-redirects' ); ?></span></th>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Turn OFF all Redirects?', 'quick-redirects' ); ?> </label></th>
+							<td><input type="checkbox" name="ppr_override-active" value="1"
+							<?php
+							if ( get_option( 'ppr_override-active' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/> <span><?php echo esc_html__( 'Basically the same as having no redirects set up.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Make ALL Redirects have <code>rel="nofollow"</code>?', 'quick-redirects' ); ?> </label></th>
+							<td><input type="checkbox" name="ppr_override-nofollow" value="1"
+							<?php
+							if ( get_option( 'ppr_override-nofollow' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/> <span><?php echo esc_html__( 'Requires "use jQuery" option to work with Quick Redirects.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Make ALL Redirects open in a New Window?', 'quick-redirects' ); ?> </label></th>
+							<td><input type="checkbox" name="ppr_override-newwindow" value="1"
+							<?php
+							if ( get_option( 'ppr_override-newwindow' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/>    <span><?php echo esc_html__( 'Requires "use jQuery" option to work with Quick Redirects.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Make ALL Redirects this type:', 'quick-redirects' ); ?> </label></th>
+							<td><select name="ppr_override-redirect-type">
+									<option value="0"><?php echo esc_html__( 'Use Individual Settings', 'quick-redirects' ); ?></option>
+									<option value="301"
+									<?php
+									if ( get_option( 'ppr_override-redirect-type' ) == '301' ) {
+										echo ' selected="selected" ';}
+									?>
+										>301 <?php echo esc_html__( 'Permanant Redirect', 'quick-redirects' ); ?></option>
+									<option value="302"
+									<?php
+									if ( get_option( 'ppr_override-redirect-type' ) == '302' ) {
+										echo ' selected="selected" ';}
+									?>
+										>302 <?php echo esc_html__( 'Temporary Redirect', 'quick-redirects' ); ?></option>
+									<option value="307"
+									<?php
+									if ( get_option( 'ppr_override-redirect-type' ) == '307' ) {
+										echo ' selected="selected" ';}
+									?>
+										>307 <?php echo esc_html__( 'Temporary Redirect', 'quick-redirects' ); ?></option>
+									<option value="meta"
+									<?php
+									if ( get_option( 'ppr_override-redirect-type' ) == 'meta' ) {
+										echo ' selected="selected" ';}
+									?>
+									><?php echo esc_html__( 'Meta Refresh Redirect', 'quick-redirects' ); ?></option>
+								</select>
+								<span> <?php echo esc_html__( '(This will also override Quick Redirects)', 'quick-redirects' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Make ALL redirects Case Sensitive?', 'quick-redirects' ); ?> </label></th>
+							<td><input type="checkbox" name="ppr_override-casesensitive" value="1"
+							<?php
+							if ( get_option( 'ppr_override-casesensitive' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/> <span> <?php echo esc_html__( 'Makes URLs CaSe SensiTivE - i.e., /somepage/ DOES NOT EQUAL /SoMEpaGe/', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Make ALL Redirects go to this URL:', 'quick-redirects' ); ?> </label></th>
+							<td><input type="text" size="50" name="ppr_override-URL" value="<?php echo get_option( 'ppr_override-URL' ); ?>"/> <span><?php echo esc_html__( 'Use full URL including <code>http://</code>.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Rewrite ALL Redirects URLs to Show in LINK?', 'quick-redirects' ); ?> </label></th>
+							<td><input type="checkbox" name="ppr_override-rewrite" value="1"
+							<?php
+							if ( get_option( 'ppr_override-rewrite' ) == '1' ) {
+								echo ' checked="checked" ';}
+							?>
+							/> <span><?php echo esc_html__( 'Makes link show redirect URL instead of the original URL. Will only work on Quick Redirects if the "Use jQuery" option is set.', 'quick-redirects' ); ?></span></td>
+						</tr>
+						<tr>
+							<th scope="row" colspan="2"><hr noshade color="#EAEAEA" size="1"></th>
+						</tr>
+						<tr>
+							<th scope="row" colspan="2" class="qppr-no-padding"><h2 style="display:inline-block;"><?php echo esc_html__( 'Plugin Clean Up', 'quick-redirects' ); ?></h2><span><?php echo esc_html__( '<strong>NOTE: </strong>This will DELETE all redirects - so be careful with this.', 'quick-redirects' ); ?></span></th>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Delete Redirects?', 'quick-redirects' ); ?> </label></th>
+							<td>
+								<input class="button-secondary qppr-delete-regular" type="button" name="qppr-delete-regular" value="<?php echo esc_html__( 'Delete All Individual Redirects', 'quick-redirects' ); ?>" />
+								<input class="button-secondary qppr-delete-quick" type="button" name="qppr-delete-quick" value="<?php echo esc_html__( 'Delete all Quick Redirects', 'quick-redirects' ); ?>" />
+								<span style="display: block;margin-top: 5px;"><?php echo esc_html__( 'Individual Redirects are redirects set up on individual pages or posts when in the editing screen. The Quick Redirects are set up on the Quick Redirects page.', 'quick-redirects' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label><?php echo esc_html__( 'Delete ALL Redirects & Settings?', 'quick-redirects' ); ?> </label></th>
+							<td>
+								<input class="button-secondary qppr-delete-everything" type="button" name="qppr-delete-everything" value="<?php echo esc_html__( 'Delete ALL Redirects AND Settings', 'quick-redirects' ); ?>" />
+								<span style="color: #0000ff;display: block;margin-top: 5px;"><?php echo esc_html__( 'All Redirects and Settings will be removed from the database. This can NOT be undone!', 'quick-redirects' ); ?></span>
+							</td>
+						</tr>
+					</table>
+					<p class="submit"><input type="submit" class="button-primary" value="<?php echo esc_html__( 'Save Changes', 'quick-redirects' ); ?>" /></p>
+				</form>
+				</div>
+				<div class="clear-both"></div>
 			</div>
 		</div>
-		<div class="qppr-left">
-		<form method="post" action="options.php" class="qpprform">
-			<?php settings_fields( 'ppr-settings-group' ); ?>
-			<table class="form-table">
-				<tr>
-					<th scope="row" colspan="2" class="qppr-no-padding"><hr noshade color="#EAEAEA" size="1"></th>
-				</tr>
-				<tr>
-					<th scope="row" colspan="2"><h2 style="display:inline-block;"><?php echo __( 'Basic Settings', 'quick-pagepost-redirect-plugin' ); ?></h2></th>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Use with Custom Post Types?', 'quick-pagepost-redirect-plugin' ); ?></label></th>
-					<td><input type="checkbox" name="ppr_use-custom-post-types" value="1"
-					<?php
-					if ( get_option( 'ppr_use-custom-post-types' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/></td>
-				</tr>
-				<tr>
-					<th scope="row"><label><span style="color:#FF0000;font-weight:bold;font-size:100%;margin-left:0px;"><?php echo __( 'Hide', 'quick-pagepost-redirect-plugin' ); ?></span> <?php echo __( 'meta box for following Post Types:', 'quick-pagepost-redirect-plugin' ); ?></label></th>
-					<td>
-					<?php
-						$ptypes   = get_post_types();
-						$ptypesok = $this->pprptypes_ok;
-					if ( ! is_array( $ptypesok ) ) {
-						$ptypesok = get_option( 'ppr_qpprptypeok' );}
-					if ( ! is_array( $ptypesok ) ) {
-						$ptypesok = array();}
-						$ptypeHTML = '<div class="qppr-posttypes">';
-					foreach ( $ptypes as $ptype ) {
-						if ( $ptype != 'nav_menu_item' && $ptype != 'attachment' && $ptype != 'revision' ) {
-							if ( in_array( $ptype, $ptypesok ) ) {
-								$ptypecheck = ' checked="checked"';
-							} else {
-								$ptypecheck = '';
-							}
-							$ptypeHTML .= '<div class="qppr-ptype"><input class="qppr-ptypecb" type="checkbox" name="ppr_qpprptypeok[]" value="' . esc_attr( $ptype ) . '"' . esc_attr( $ptypecheck ) . ' /> <div class="ppr-type-name">' . esc_html( $ptype ) . '</div></div>';
-						}
-					}
-						$ptypeHTML .= '</div>';
-					echo $ptypeHTML;
-					?>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Show Column Headers?', 'quick-pagepost-redirect-plugin' ); ?></label></th>
-					<td><input type="checkbox" id ="ppr_show-columns" name="ppr_show-columns" value="1"
-					<?php
-					if ( get_option( 'ppr_show-columns' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/> <span><?php echo __( 'Show Columns on list pages for set up redirects.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-
-					<th scope="row"><label><?php echo __( 'Use jQuery?', 'quick-pagepost-redirect-plugin' ); ?></label></th>
-					<td><input type="checkbox" id ="ppr_use-jquery" name="ppr_use-jquery" value="1"
-					<?php
-					if ( get_option( 'ppr_use-jquery' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/> <span><?php echo __( 'Increases effectiveness of plugin. If you have a jQuery conflict, try turning this off.', 'quick-pagepost-redirect-plugin' ); ?></span><br /><span style="margin:0;"><?php echo __( 'Uses jQuery to add the "New Window" and "No Follow" attributes to links.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row" colspan="2" class="qppr-no-padding"><hr noshade color="#EAEAEA" size="1"></th>
-				</tr>
-				<tr>
-					<th scope="row" colspan="2"><h2 style="font-size:20px;display:inline-block;"><?php echo __( 'Master Override Options', 'quick-pagepost-redirect-plugin' ); ?></h2><span><?php echo __( '<strong>NOTE: </strong>The below settings will override all individual settings.', 'quick-pagepost-redirect-plugin' ); ?></span></th>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Turn OFF all Redirects?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><input type="checkbox" name="ppr_override-active" value="1"
-					<?php
-					if ( get_option( 'ppr_override-active' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/> <span><?php echo __( 'Basically the same as having no redirects set up.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Make ALL Redirects have <code>rel="nofollow"</code>?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><input type="checkbox" name="ppr_override-nofollow" value="1"
-					<?php
-					if ( get_option( 'ppr_override-nofollow' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/> <span><?php echo __( 'Requires "use jQuery" option to work with Quick Redirects.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Make ALL Redirects open in a New Window?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><input type="checkbox" name="ppr_override-newwindow" value="1"
-					<?php
-					if ( get_option( 'ppr_override-newwindow' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/>    <span><?php echo __( 'Requires "use jQuery" option to work with Quick Redirects.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Make ALL Redirects this type:', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><select name="ppr_override-redirect-type">
-							<option value="0"><?php echo __( 'Use Individual Settings', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="301"
-							<?php
-							if ( get_option( 'ppr_override-redirect-type' ) == '301' ) {
-								echo ' selected="selected" ';}
-							?>
-								>301 <?php echo __( 'Permanant Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="302"
-							<?php
-							if ( get_option( 'ppr_override-redirect-type' ) == '302' ) {
-								echo ' selected="selected" ';}
-							?>
-								>302 <?php echo __( 'Temporary Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="307"
-							<?php
-							if ( get_option( 'ppr_override-redirect-type' ) == '307' ) {
-								echo ' selected="selected" ';}
-							?>
-								>307 <?php echo __( 'Temporary Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-							<option value="meta"
-							<?php
-							if ( get_option( 'ppr_override-redirect-type' ) == 'meta' ) {
-								echo ' selected="selected" ';}
-							?>
-							><?php echo __( 'Meta Refresh Redirect', 'quick-pagepost-redirect-plugin' ); ?></option>
-						</select>
-						<span> <?php echo __( '(This will also override Quick Redirects)', 'quick-pagepost-redirect-plugin' ); ?></span>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Make ALL redirects Case Sensitive?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><input type="checkbox" name="ppr_override-casesensitive" value="1"
-					<?php
-					if ( get_option( 'ppr_override-casesensitive' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/> <span> <?php echo __( 'Makes URLs CaSe SensiTivE - i.e., /somepage/ DOES NOT EQUAL /SoMEpaGe/', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Make ALL Redirects go to this URL:', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><input type="text" size="50" name="ppr_override-URL" value="<?php echo get_option( 'ppr_override-URL' ); ?>"/> <span><?php echo __( 'Use full URL including <code>http://</code>.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Rewrite ALL Redirects URLs to Show in LINK?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td><input type="checkbox" name="ppr_override-rewrite" value="1"
-					<?php
-					if ( get_option( 'ppr_override-rewrite' ) == '1' ) {
-						echo ' checked="checked" ';}
-					?>
-					/> <span><?php echo __( 'Makes link show redirect URL instead of the original URL. Will only work on Quick Redirects if the "Use jQuery" option is set.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
-				</tr>
-				<tr>
-					<th scope="row" colspan="2"><hr noshade color="#EAEAEA" size="1"></th>
-				</tr>
-				<tr>
-					<th scope="row" colspan="2" class="qppr-no-padding"><h2 style="display:inline-block;"><?php echo __( 'Plugin Clean Up', 'quick-pagepost-redirect-plugin' ); ?></h2><span><?php echo __( '<strong>NOTE: </strong>This will DELETE all redirects - so be careful with this.', 'quick-pagepost-redirect-plugin' ); ?></span></th>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Delete Redirects?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td>
-						<input class="button-secondary qppr-delete-regular" type="button" name="qppr-delete-regular" value="<?php echo __( 'Delete All Individual Redirects', 'quick-pagepost-redirect-plugin' ); ?>" />
-						<input class="button-secondary qppr-delete-quick" type="button" name="qppr-delete-quick" value="<?php echo __( 'Delete all Quick Redirects', 'quick-pagepost-redirect-plugin' ); ?>" />
-						<span style="display: block;margin-top: 5px;"><?php echo __( 'Individual Redirects are redirects set up on individual pages or posts when in the editing screen. The Quick Redirects are set up on the Quick Redirects page.', 'quick-pagepost-redirect-plugin' ); ?></span>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label><?php echo __( 'Delete ALL Redirects & Settings?', 'quick-pagepost-redirect-plugin' ); ?> </label></th>
-					<td>
-						<input class="button-secondary qppr-delete-everything" type="button" name="qppr-delete-everything" value="<?php echo __( 'Delete ALL Redirects AND Settings', 'quick-pagepost-redirect-plugin' ); ?>" />
-						<span style="color: #0000ff;display: block;margin-top: 5px;"><?php echo __( 'All Redirects and Settings will be removed from the database. This can NOT be undone!', 'quick-pagepost-redirect-plugin' ); ?></span>
-					</td>
-				</tr>
-			</table>
-			<p class="submit"><input type="submit" class="button-primary" value="<?php echo __( 'Save Changes', 'quick-pagepost-redirect-plugin' ); ?>" /></p>
-		</form>
-		</div>
-		<div class="clear-both"></div>
-	</div>
-</div>
 		<?php
 	}
 
@@ -1323,28 +1295,28 @@ class quick_page_post_reds {
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr_sample_redirects',
-					'title'   => __( 'Examples', 'quick-pagepost-redirect-plugin' ),
+					'title'   => esc_html__( 'Examples', 'quick-redirects' ),
 					'content' => $content,
 				)
 			);
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr_add_redirects',
-					'title'   => __( 'Troubleshooting', 'quick-pagepost-redirect-plugin' ),
+					'title'   => esc_html__( 'Troubleshooting', 'quick-redirects' ),
 					'content' => '
 				 <div style="padding:10px 0;">
-				<b style="color:red;">' . __( 'IMPORTANT TROUBLESHOOTING NOTES:', 'quick-pagepost-redirect-plugin' ) . '</b>
+				<b style="color:red;">' . esc_html__( 'IMPORTANT TROUBLESHOOTING NOTES:', 'quick-redirects' ) . '</b>
 				<ol style="margin-top:5px;">
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'At this time the New Window (NW) and No Follow (NF) features will not work for Quick Redirects unless "Use jQuery" is enabled in the options.', 'quick-pagepost-redirect-plugin' ) . '</li>
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'It is recommended that the <b>Request URL</b> be relative to the ROOT directory and contain the <code>/</code> at the beginning.', 'quick-pagepost-redirect-plugin' ) . '</li>
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'If you do use the domain name in the Request URL field, make sure it matches your site\'s domain style and protocol. For example, if your site uses "www" in front of your domain name, be sure to include it. if your site uses <code>https://</code>, use it as the protocol. Our best guess is that your domain and protocol are', 'quick-pagepost-redirect-plugin' ) . ' <code>' . network_site_url( '/' ) . '</code></li>
-					<!--li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'If you are having issues with the link not redirecting on a SSL site with mixed SSL (meaning links can be either SSL or non SSL), try adding two redirects, one with and one without the SSL protocol.', 'quick-pagepost-redirect-plugin' ) . '</li-->
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'The <b>Destination</b> field can be any valid URL or relative path (from root), for example', 'quick-pagepost-redirect-plugin' ) . ' <code>http://www.mysite.com/destination-page/</code> OR <code>/destination-page/</code></li>
-					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . __( 'In order for NW (open in a new window) or NF (rel="nofollow") options to work with Quick Redirects, you need to have:', 'quick-pagepost-redirect-plugin' ) . '
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'At this time the New Window (NW) and No Follow (NF) features will not work for Quick Redirects unless "Use jQuery" is enabled in the options.', 'quick-redirects' ) . '</li>
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'It is recommended that the <b>Request URL</b> be relative to the ROOT directory and contain the <code>/</code> at the beginning.', 'quick-redirects' ) . '</li>
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'If you do use the domain name in the Request URL field, make sure it matches your site\'s domain style and protocol. For example, if your site uses "www" in front of your domain name, be sure to include it. if your site uses <code>https://</code>, use it as the protocol. Our best guess is that your domain and protocol are', 'quick-redirects' ) . ' <code>' . network_site_url( '/' ) . '</code></li>
+					<!--li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'If you are having issues with the link not redirecting on a SSL site with mixed SSL (meaning links can be either SSL or non SSL), try adding two redirects, one with and one without the SSL protocol.', 'quick-redirects' ) . '</li-->
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'The <b>Destination</b> field can be any valid URL or relative path (from root), for example', 'quick-redirects' ) . ' <code>http://www.mysite.com/destination-page/</code> OR <code>/destination-page/</code></li>
+					<li style="color:#214070;margin-left:15px;list-style-type:disc;">' . esc_html__( 'In order for NW (open in a new window) or NF (rel="nofollow") options to work with Quick Redirects, you need to have:', 'quick-redirects' ) . '
 						<ol>
-							<li>' . __( '"Use jQuery?" option selected in the settings page', 'quick-pagepost-redirect-plugin' ) . '</li>
-							<li>' . __( 'A link that uses the request url SOMEWHERE in your site page - i.e., in a menu, content, sidebar, etc.', 'quick-pagepost-redirect-plugin' ) . ' </li>
-							<li>' . __( 'The open in a new window or nofollow settings will not happen if someone just types the old link in the URL or if they come from a bookmark or link outside your site - in essence, there needs to be a link that they click on in your site so that the jQuery script can add the appropriate <code>target</code> and <code>rel</code> properties to the link to make it work.', 'quick-pagepost-redirect-plugin' ) . '</li>
+							<li>' . esc_html__( '"Use jQuery?" option selected in the settings page', 'quick-redirects' ) . '</li>
+							<li>' . esc_html__( 'A link that uses the request url SOMEWHERE in your site page - i.e., in a menu, content, sidebar, etc.', 'quick-redirects' ) . ' </li>
+							<li>' . esc_html__( 'The open in a new window or nofollow settings will not happen if someone just types the old link in the URL or if they come from a bookmark or link outside your site - in essence, there needs to be a link that they click on in your site so that the jQuery script can add the appropriate <code>target</code> and <code>rel</code> properties to the link to make it work.', 'quick-redirects' ) . '</li>
 						</ol>
 					</li>
 				</ol>
@@ -1355,14 +1327,14 @@ class quick_page_post_reds {
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr_export_redirects',
-					'title'   => __( 'Export Redirects', 'quick-pagepost-redirect-plugin' ),
-					'content' => '<div style="padding:10px 0;"><p>' . __( 'You can export redirects in two formats - Encoded or Delimited.', 'quick-pagepost-redirect-plugin' ) . '</p></div>',
+					'title'   => esc_html__( 'Export Redirects', 'quick-redirects' ),
+					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'You can export redirects in two formats - Encoded or Delimited.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr_import_redirects',
-					'title'   => __( 'Import Redirects', 'quick-pagepost-redirect-plugin' ),
+					'title'   => esc_html__( 'Import Redirects', 'quick-redirects' ),
 					'content' => '<div style="padding:10px 0;"><p>Help content coming soon.</p></div>',
 				)
 			);
@@ -1370,46 +1342,46 @@ class quick_page_post_reds {
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr-load-page-content',
-					'title'   => __( 'Load Content?', 'quick-pagepost-redirect-plugin' ),
-					'content' => '<div style="padding:10px 0;"><p>' . __( 'Use the <strong>Load Content?</strong> option to allow the page content to load as normal or to only load a blank page or the content provided in the <strong>Page Content</strong> section. ', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'If checked, all of the original content will load, so keep this in mind when setting the <strong>Redirect Seconds</strong> - if set too low, the page will not compeletely load. ', 'quick-pagepost-redirect-plugin' ) . '</p></div>',
+					'title'   => esc_html__( 'Load Content?', 'quick-redirects' ),
+					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'Use the <strong>Load Content?</strong> option to allow the page content to load as normal or to only load a blank page or the content provided in the <strong>Page Content</strong> section. ', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'If checked, all of the original content will load, so keep this in mind when setting the <strong>Redirect Seconds</strong> - if set too low, the page will not compeletely load. ', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr-redirect-seconds',
-					'title'   => __( 'Redirect Seconds', 'quick-pagepost-redirect-plugin' ),
-					'content' => '<div style="padding:10px 0;"><p>' . __( 'Enter the nuber of seconds to wait before the redirect happens. Enter 0 to have an instant redirect*.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( '*Keep in mind that the redirect seconds will start counting only AFTER the <strong>Redirect Trigger</strong> element is loaded - so 0 may be slightly longer than instant, depending on how much content needs to load before the trigger happens.', 'quick-pagepost-redirect-plugin' ) . '</p></div>',
+					'title'   => esc_html__( 'Redirect Seconds', 'quick-redirects' ),
+					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'Enter the nuber of seconds to wait before the redirect happens. Enter 0 to have an instant redirect*.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( '*Keep in mind that the redirect seconds will start counting only AFTER the <strong>Redirect Trigger</strong> element is loaded - so 0 may be slightly longer than instant, depending on how much content needs to load before the trigger happens.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr-redirect-trigger',
-					'title'   => __( 'Redirect Trigger', 'quick-pagepost-redirect-plugin' ),
-					'content' => '<div style="padding:10px 0;"><p>' . __( 'The class or id or tag name of the element to load before the redirect starts counting down. If nothing is used, it will default to the body tag as a trigger.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'If you use a class, the class name should have the "." in the name, i.e., <strong>.my-class-name</strong>', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'If you use an id, the id should have the "#" in the name, i.e., <strong>#my-id-name</strong>.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'If you use a tag name, the name should NOT have the "&lt;" or "&gt;" characters in the name, i.e., &lt;body&gt; would just be <strong>body</strong>.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'Do not use a tag name that is common, like "a" or "div" as it will trigger on all events.', 'quick-pagepost-redirect-plugin' ) . '</p></div>',
+					'title'   => esc_html__( 'Redirect Trigger', 'quick-redirects' ),
+					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'The class or id or tag name of the element to load before the redirect starts counting down. If nothing is used, it will default to the body tag as a trigger.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'If you use a class, the class name should have the "." in the name, i.e., <strong>.my-class-name</strong>', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'If you use an id, the id should have the "#" in the name, i.e., <strong>#my-id-name</strong>.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'If you use a tag name, the name should NOT have the "&lt;" or "&gt;" characters in the name, i.e., &lt;body&gt; would just be <strong>body</strong>.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'Do not use a tag name that is common, like "a" or "div" as it will trigger on all events.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr-redirect-append',
-					'title'   => __( 'Append Content To', 'quick-pagepost-redirect-plugin' ),
-					'content' => '<div style="padding:10px 0;"><p>' . __( 'The class, id or tag name that you want the content in the <strong>Page Content</strong> to be loading into.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'If you are loading the content of the page, use an existing class or id for an existing element (i.e., .page-content) so your additional page content (if any) is loaded into that element.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'When no class, id or tag name is used, the <strong>body</strong> tag will be used.', 'quick-pagepost-redirect-plugin' ) . '</p></div>',
+					'title'   => esc_html__( 'Append Content To', 'quick-redirects' ),
+					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'The class, id or tag name that you want the content in the <strong>Page Content</strong> to be loading into.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'If you are loading the content of the page, use an existing class or id for an existing element (i.e., .page-content) so your additional page content (if any) is loaded into that element.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'When no class, id or tag name is used, the <strong>body</strong> tag will be used.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 			$screen->add_help_tab(
 				array(
 					'id'      => 'qppr-redirect-content',
-					'title'   => __( 'Page Content', 'quick-pagepost-redirect-plugin' ),
-					'content' => '<div style="padding:10px 0;"><p>' . __( 'This is your page content you want to add. If you have a "tracking pixel" script or image tag you want to use, add it here.', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'A good example of use, is adding a tracking script (or Facebook Conversion Pixel) to the <strong>Page Content box</strong> and unchecking the <strong>Load Content?</strong> box. Then set the <strong>Redirect Seconds</strong> to 1 or 2 so the script has a chance to load and set <strong>Append Content</strong> To to "body" and <strong>Redirect Trigger</strong> to "body".', 'quick-pagepost-redirect-plugin' ) . '</p>
-				 <p>' . __( 'Additionally, you can add the redirect counter to the page by adding the code sample under the <strong>Page Content</strong> box.', 'quick-pagepost-redirect-plugin' ) . '</p></div>',
+					'title'   => esc_html__( 'Page Content', 'quick-redirects' ),
+					'content' => '<div style="padding:10px 0;"><p>' . esc_html__( 'This is your page content you want to add. If you have a "tracking pixel" script or image tag you want to use, add it here.', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'A good example of use, is adding a tracking script (or Facebook Conversion Pixel) to the <strong>Page Content box</strong> and unchecking the <strong>Load Content?</strong> box. Then set the <strong>Redirect Seconds</strong> to 1 or 2 so the script has a chance to load and set <strong>Append Content</strong> To to "body" and <strong>Redirect Trigger</strong> to "body".', 'quick-redirects' ) . '</p>
+				 <p>' . esc_html__( 'Additionally, you can add the redirect counter to the page by adding the code sample under the <strong>Page Content</strong> box.', 'quick-redirects' ) . '</p></div>',
 				)
 			);
 		}
@@ -1418,7 +1390,7 @@ class quick_page_post_reds {
 	function ppr_options_page() {
 		?>
 <div class="wrap">
-	<h2><?php echo __( 'Quick Redirects (301 Redirects)', 'quick-pagepost-redirect-plugin' ); ?></h2>
+	<h2><?php echo esc_html__( 'Quick Redirects (301 Redirects)', 'quick-redirects' ); ?></h2>
 		<?php if ( $this->updatemsg != '' ) { ?>
 		<div class="updated settings-error" id="setting-error-settings_updated"><p><strong><?php echo esc_html( $this->updatemsg ); ?></strong></p></div>
 	<?php } ?>
@@ -1430,31 +1402,31 @@ class quick_page_post_reds {
 		?>
 		<?php if ( $isJQueryOn == '' && ( $isJQueryMsgHidden == '' || $isJQueryMsgHidden == '0' ) ) { ?>
 			<div class="usejqpprmessage error below-h2" id="usejqpprmessage">
-				<?php echo __( 'The <code>Use jQuery?</code> option is turned off in the settings.<br/>In order to use <strong>NW</strong> (open in a new window) or <strong>NF</strong> (add rel="nofollow") options for Quick Redirects, you must have it enabled.', 'quick-pagepost-redirect-plugin' ); ?><br/>
-				<div class="hidepprjqmessage" style=""><a href="javascript:void(0);" id="hidepprjqmessage"><?php echo __( 'hide this message', 'quick-pagepost-redirect-plugin' ); ?></a></div>
+				<?php echo esc_html__( 'The <code>Use jQuery?</code> option is turned off in the settings.<br/>In order to use <strong>NW</strong> (open in a new window) or <strong>NF</strong> (add rel="nofollow") options for Quick Redirects, you must have it enabled.', 'quick-redirects' ); ?><br/>
+				<div class="hidepprjqmessage" style=""><a href="javascript:void(0);" id="hidepprjqmessage"><?php echo esc_html__( 'hide this message', 'quick-redirects' ); ?></a></div>
 			</div>
 		<?php } elseif ( $isJQueryMsgHidden2 != '1' ) { ?>
 			<div class="usejqpprmessage info below-h2" id="usejqpprmessage2">
-				<?php echo __( 'To use the <strong>NW</strong> (open in a new window) <strong>NF</strong> (nofollow) options, check the appropriate option and update when adding redirects. Then, any link in the page that has the request URL will be updated with these options (as long as you have <code>Use jQuery?</code> enabled in the plugin settings.', 'quick-pagepost-redirect-plugin' ); ?>
-				<div class="hidepprjqmessage" style=""><a href="javascript:void(0);" id="hidepprjqmessage2"><?php echo __( 'hide this message', 'quick-pagepost-redirect-plugin' ); ?></a></div>
+				<?php echo esc_html__( 'To use the <strong>NW</strong> (open in a new window) <strong>NF</strong> (nofollow) options, check the appropriate option and update when adding redirects. Then, any link in the page that has the request URL will be updated with these options (as long as you have <code>Use jQuery?</code> enabled in the plugin settings.', 'quick-redirects' ); ?>
+				<div class="hidepprjqmessage" style=""><a href="javascript:void(0);" id="hidepprjqmessage2"><?php echo esc_html__( 'hide this message', 'quick-redirects' ); ?></a></div>
 			</div>
 		<?php } ?>
-	<p><?php echo __( 'Quick Redirects are useful when you have links from an old site that now come up 404 Not Found, and you need to have them redirect to a new location on the current site - as long as the old site and the current site have the same domain name. They are also helpful if you have an existing URL that you need to send some place else and you don\'t want to create a Page or Post just to use the individual Page/Post Redirect option.', 'quick-pagepost-redirect-plugin' ); ?></p>
-	<p><?php echo __( 'To add Quick Redirects, put the URL for the redirect in the <strong>Request URL</strong> field, and the URL it should be redirected to in the <strong>Destination URL</strong> field. To delete a redirect, click the trash can at the end of that row. To edit a redirect, click the pencil edit icon.', 'quick-pagepost-redirect-plugin' ); ?></p>
-	<p><?php echo __( 'See \'HELP\' in the upper right corner, for troubleshooting problems and example redirects.', 'quick-pagepost-redirect-plugin' ); ?></p>
+	<p><?php echo esc_html__( 'Quick Redirects are useful when you have links from an old site that now come up 404 Not Found, and you need to have them redirect to a new location on the current site - as long as the old site and the current site have the same domain name. They are also helpful if you have an existing URL that you need to send some place else and you don\'t want to create a Page or Post just to use the individual Page/Post Redirect option.', 'quick-redirects' ); ?></p>
+	<p><?php echo esc_html__( 'To add Quick Redirects, put the URL for the redirect in the <strong>Request URL</strong> field, and the URL it should be redirected to in the <strong>Destination URL</strong> field. To delete a redirect, click the trash can at the end of that row. To edit a redirect, click the pencil edit icon.', 'quick-redirects' ); ?></p>
+	<p><?php echo esc_html__( 'See \'HELP\' in the upper right corner, for troubleshooting problems and example redirects.', 'quick-redirects' ); ?></p>
 	<form method="post" action="admin.php?page=redirect-updates" id="qppr_quick_save_form">
 		<?php wp_nonce_field( 'add_qppr_redirects' ); ?>
 		<div class="qppr_quick_redirects_wrapper">
 		<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<th align="left" colspan="8"><h3><?php echo __( 'Add New Redirects', 'quick-pagepost-redirect-plugin' ); ?></h3></th>
+				<th align="left" colspan="8"><h3><?php echo esc_html__( 'Add New Redirects', 'quick-redirects' ); ?></h3></th>
 			</tr>
 			<tr>
-				<th align="left" colspan="2"><?php echo __( 'Request URL', 'quick-pagepost-redirect-plugin' ); ?></th>
+				<th align="left" colspan="2"><?php echo esc_html__( 'Request URL', 'quick-redirects' ); ?></th>
 				<th align="left">&nbsp;</th>
-				<th align="left"><?php echo __( 'Destination URL', 'quick-pagepost-redirect-plugin' ); ?></th>
-				<th align="center"><?php echo __( 'NW', 'quick-pagepost-redirect-plugin' ); ?>*</th>
-				<th align="center"><?php echo __( 'NF', 'quick-pagepost-redirect-plugin' ); ?>*</th>
+				<th align="left"><?php echo esc_html__( 'Destination URL', 'quick-redirects' ); ?></th>
+				<th align="center"><?php echo esc_html__( 'NW', 'quick-redirects' ); ?>*</th>
+				<th align="center"><?php echo esc_html__( 'NF', 'quick-redirects' ); ?>*</th>
 				<th align="left"></th>
 				<th align="left"></th>
 			</tr>
@@ -1462,8 +1434,8 @@ class quick_page_post_reds {
 				<td class="table-qppr-req" colspan="2"><input type="text" name="quickppr_redirects[request][]" value="" style="max-width:100%;width:100%;" /></td>
 				<td class="table-qppr-arr">&nbsp;&raquo;&nbsp;</td>
 				<td class="table-qppr-des"><input type="text" name="quickppr_redirects[destination][]" value="" style="max-width:100%;width:100%;" /></td>
-				<td class="table-qppr-nwn"><input class="pprnewwin" type="checkbox" name="quickppr_redirects[newwindow][0]" value="1" title="<?php echo __( 'open in a New Window', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
-				<td class="table-qppr-nfl"><input class="pprnofoll" type="checkbox" name="quickppr_redirects[nofollow][0]" value="1" title="<?php echo __( 'add No Follow', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
+				<td class="table-qppr-nwn"><input class="pprnewwin" type="checkbox" name="quickppr_redirects[newwindow][0]" value="1" title="<?php echo esc_html__( 'open in a New Window', 'quick-redirects' ); ?>" /></td>
+				<td class="table-qppr-nfl"><input class="pprnofoll" type="checkbox" name="quickppr_redirects[nofollow][0]" value="1" title="<?php echo esc_html__( 'add No Follow', 'quick-redirects' ); ?>" /></td>
 				<td class="table-qppr-edt"></td>
 				<td class="table-qppr-del"></td>
 			</tr>
@@ -1471,8 +1443,8 @@ class quick_page_post_reds {
 				<td class="table-qppr-req" colspan="2"><input type="text" name="quickppr_redirects[request][]" value="" style="max-width:100%;width:100%;" /></td>
 				<td class="table-qppr-arr">&nbsp;&raquo;&nbsp;</td>
 				<td class="table-qppr-des"><input type="text" name="quickppr_redirects[destination][]" value="" style="max-width:100%;width:100%;" /></td>
-				<td class="table-qppr-nwn"><input class="pprnewwin" type="checkbox" name="quickppr_redirects[newwindow][1]" value="1" title="<?php echo __( 'open in a New Window', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
-				<td class="table-qppr-nfl"><input class="pprnofoll" type="checkbox" name="quickppr_redirects[nofollow][1]" value="1" title="<?php echo __( 'add No Follow', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
+				<td class="table-qppr-nwn"><input class="pprnewwin" type="checkbox" name="quickppr_redirects[newwindow][1]" value="1" title="<?php echo esc_html__( 'open in a New Window', 'quick-redirects' ); ?>" /></td>
+				<td class="table-qppr-nfl"><input class="pprnofoll" type="checkbox" name="quickppr_redirects[nofollow][1]" value="1" title="<?php echo esc_html__( 'add No Follow', 'quick-redirects' ); ?>" /></td>
 				<td class="table-qppr-edt"></td>
 				<td class="table-qppr-del"></td>
 			</tr>
@@ -1480,42 +1452,42 @@ class quick_page_post_reds {
 				<td class="table-qppr-req" colspan="2"><input type="text" name="quickppr_redirects[request][]" value="" style="max-width:100%;width:100%;" /></td>
 				<td class="table-qppr-arr">&nbsp;&raquo;&nbsp;</td>
 				<td class="table-qppr-des"><input type="text" name="quickppr_redirects[destination][]" value="" style="max-width:100%;width:100%;" /></td>
-				<td class="table-qppr-nwn"><input class="pprnewwin" type="checkbox" name="quickppr_redirects[newwindow][2]" value="1" title="<?php echo __( 'open in a New Window', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
-				<td class="table-qppr-nfl"><input class="pprnofoll" type="checkbox" name="quickppr_redirects[nofollow][2]" value="1" title="<?php echo __( 'add No Follow', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
+				<td class="table-qppr-nwn"><input class="pprnewwin" type="checkbox" name="quickppr_redirects[newwindow][2]" value="1" title="<?php echo esc_html__( 'open in a New Window', 'quick-redirects' ); ?>" /></td>
+				<td class="table-qppr-nfl"><input class="pprnofoll" type="checkbox" name="quickppr_redirects[nofollow][2]" value="1" title="<?php echo esc_html__( 'add No Follow', 'quick-redirects' ); ?>" /></td>
 				<td class="table-qppr-edt"></td>
 				<td class="table-qppr-del"></td>
 			</tr>
 			<tr>
-				<td style="text-align:right;" colspan="6"><div style="font-size: 11px;"><em>*<?php echo __( 'New Window(NW) and NoFollow(NF) functionality not available unless "Use with jQuery" is set in the options.', 'quick-pagepost-redirect-plugin' ); ?></em></div></td>
+				<td style="text-align:right;" colspan="6"><div style="font-size: 11px;"><em>*<?php echo esc_html__( 'New Window(NW) and NoFollow(NF) functionality not available unless "Use with jQuery" is set in the options.', 'quick-redirects' ); ?></em></div></td>
 				<td style="text-align:right;" colspan="2"></td>
 			</tr>
 			<tr>
-				<td align="left" colspan="8"><p class="submit"><input type="submit" name="submit_301" class="button button-primary" value="<?php echo __( 'Add New Redirects', 'quick-pagepost-redirect-plugin' ); ?>" /></p></td>
+				<td align="left" colspan="8"><p class="submit"><input type="submit" name="submit_301" class="button button-primary" value="<?php echo esc_html__( 'Add New Redirects', 'quick-redirects' ); ?>" /></p></td>
 			</tr>
 			<tr>
 				<td class="newdiv" colspan="8"><div></div></td>
 			</tr>
 			<tr>
-				<th align="left" colspan="8"><h3 id="qppr-existing-redirects"><?php echo __( 'Existing Redirects', 'quick-pagepost-redirect-plugin' ); ?></h3></th>
+				<th align="left" colspan="8"><h3 id="qppr-existing-redirects"><?php echo esc_html__( 'Existing Redirects', 'quick-redirects' ); ?></h3></th>
 			</tr>
 			<tr>
-				<th align="left" colspan="2"><?php echo __( 'Request URL', 'quick-pagepost-redirect-plugin' ); ?></th>
+				<th align="left" colspan="2"><?php echo esc_html__( 'Request URL', 'quick-redirects' ); ?></th>
 				<th align="left">&nbsp;</th>
-				<th align="left"><?php echo __( 'Destination URL', 'quick-pagepost-redirect-plugin' ); ?></th>
-				<th align="center"><?php echo __( 'NW', 'quick-pagepost-redirect-plugin' ); ?></th>
-				<th align="center"><?php echo __( 'NF', 'quick-pagepost-redirect-plugin' ); ?></th>
-				<th align="center"><?php // echo __( 'Edit', 'quick-pagepost-redirect-plugin' ); ?></th>
-				<th align="center"><?php // echo __( 'Delete', 'quick-pagepost-redirect-plugin' ); ?></th>
+				<th align="left"><?php echo esc_html__( 'Destination URL', 'quick-redirects' ); ?></th>
+				<th align="center"><?php echo esc_html__( 'NW', 'quick-redirects' ); ?></th>
+				<th align="center"><?php echo esc_html__( 'NF', 'quick-redirects' ); ?></th>
+				<th align="center"><?php // echo esc_html__( 'Edit', 'quick-redirects' ); ?></th>
+				<th align="center"><?php // echo esc_html__( 'Delete', 'quick-redirects' ); ?></th>
 			</tr>
 			<?php echo $this->expand_redirects(); ?>
 			<tr id="qppr-edit-row-holder" class="qppr-editing">
 				<td class="table-qppr-req cloned" colspan="2"><input class="input-qppr-req" type="text" name="request" value="" style="max-width:100%;width:100%;" /></td>
 				<td class="table-qppr-arr cloned">&nbsp;&raquo;&nbsp;</td>
 				<td class="table-qppr-des cloned"><input class="input-qppr-dest" type="text" name="destination" value="" style="max-width:100%;width:100%;" /></td>
-				<td class="table-qppr-nwn cloned"><input class="input-qppr-neww" type="checkbox" name="newwindow" value="1" title="<?php echo __( 'open in a New Window', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
-				<td class="table-qppr-nfl cloned"><input class="input-qppr-nofo" type="checkbox" name="nofollow" value="1" title="<?php echo __( 'add No Follow', 'quick-pagepost-redirect-plugin' ); ?>" /></td>
-				<td class="table-qppr-sav cloned"><span class="qpprfont-save" data-rowid="" title="<?php echo __( 'Save', 'quick-pagepost-redirect-plugin' ); ?>"></span></td>
-				<td class="table-qppr-can cloned"><span class="qpprfont-cancel" data-rowid="" title="<?php echo __( 'Cancel', 'quick-pagepost-redirect-plugin' ); ?>"></span></td>
+				<td class="table-qppr-nwn cloned"><input class="input-qppr-neww" type="checkbox" name="newwindow" value="1" title="<?php echo esc_html__( 'open in a New Window', 'quick-redirects' ); ?>" /></td>
+				<td class="table-qppr-nfl cloned"><input class="input-qppr-nofo" type="checkbox" name="nofollow" value="1" title="<?php echo esc_html__( 'add No Follow', 'quick-redirects' ); ?>" /></td>
+				<td class="table-qppr-sav cloned"><span class="qpprfont-save" data-rowid="" title="<?php echo esc_html__( 'Save', 'quick-redirects' ); ?>"></span></td>
+				<td class="table-qppr-can cloned"><span class="qpprfont-cancel" data-rowid="" title="<?php echo esc_html__( 'Cancel', 'quick-redirects' ); ?>"></span></td>
 			</tr>
 			<tr id="qppr-edit-row-saving" class="qppr-saving">
 				<td colspan="8" class="qppr-saving-row"><div class="saving"></div></td>
@@ -1556,8 +1528,8 @@ class quick_page_post_reds {
 					<td class="table-qppr-des"><div class="qppr-destination">' . esc_attr( urldecode( $destination ) ) . '</div></td>
 					<td class="table-qppr-nwn"><div class="qppr-newindow" >' . $newCheckedAjax . '</div></td>
 					<td class="table-qppr-nfl"><div class="qppr-nofollow" >' . $noCheckedAjax . '</div></td>
-					<td class="table-qppr-edt"><span id="ppredit-' . $ww . '" class="edit-qppr dashicons-edit" data-rowid="rowpprdel-' . $ww . '" title="' . __( 'Edit', 'quick-pagepost-redirect-plugin' ) . '"></span></td>
-					<td class="table-qppr-del"><span id="pprdel-' . $ww . '" class="delete-qppr dashicons-trash" data-rowid="rowpprdel-' . $ww . '" title="' . __( 'Delete', 'quick-pagepost-redirect-plugin' ) . '"></span></td>
+					<td class="table-qppr-edt"><span id="ppredit-' . $ww . '" class="edit-qppr dashicons-edit" data-rowid="rowpprdel-' . $ww . '" title="' . esc_html__( 'Edit', 'quick-redirects' ) . '"></span></td>
+					<td class="table-qppr-del"><span id="pprdel-' . $ww . '" class="delete-qppr dashicons-trash" data-rowid="rowpprdel-' . $ww . '" title="' . esc_html__( 'Delete', 'quick-redirects' ) . '"></span></td>
 				</tr>
 				';
 				++$ww;
@@ -1565,7 +1537,7 @@ class quick_page_post_reds {
 		} else {
 				$output .= '
 				<tr >
-					<td colspan="8">' . __( 'No Quick Redirects.', 'quick-pagepost-redirect-plugin' ) . '</td>
+					<td colspan="8">' . esc_html__( 'No Quick Redirects.', 'quick-redirects' ) . '</td>
 				</tr>
 				';
 		}
@@ -1727,8 +1699,8 @@ class quick_page_post_reds {
 				check_admin_referer( 'import-quick-redrects-file' );
 				if ( $_FILES['qppr_file']['error'] > 0 ) {
 					wp_die(
-						__( 'An error occured during the file upload. Please fix your server configuration and retry.', 'quick-pagepost-redirect-plugin' ),
-						__( 'SERVER ERROR - Could Not Load', 'quick-pagepost-redirect-plugin' ),
+						__( 'An error occured during the file upload. Please fix your server configuration and retry.', 'quick-redirects' ),
+						__( 'SERVER ERROR - Could Not Load', 'quick-redirects' ),
 						array(
 							'response'  => '200',
 							'back_link' => '1',
@@ -1779,8 +1751,8 @@ class quick_page_post_reds {
 							exit;
 						} else {
 							wp_die(
-								__( 'This does not look like a Quick Page Post Redirect file - it is possibly damaged or corrupt.', 'quick-pagepost-redirect-plugin' ),
-								__( 'ERROR - Not a valid File', 'quick-pagepost-redirect-plugin' ),
+								__( 'This does not look like a Quick Page Post Redirect file - it is possibly damaged or corrupt.', 'quick-redirects' ),
+								__( 'ERROR - Not a valid File', 'quick-redirects' ),
 								array(
 									'response'  => '200',
 									'back_link' => '1',
@@ -1792,8 +1764,8 @@ class quick_page_post_reds {
 						$config_file = unserialize( base64_decode( substr( $config_file, strlen( 'QUICKPAGEPOSTREDIRECT' ) ) ) );
 						if ( ! is_array( $config_file ) ) {
 							wp_die(
-								__( 'This does not look like a Quick Page Post Redirect file - it is possibly damaged or corrupt.', 'quick-pagepost-redirect-plugin' ),
-								__( 'ERROR - Not a valid File', 'quick-pagepost-redirect-plugin' ),
+								__( 'This does not look like a Quick Page Post Redirect file - it is possibly damaged or corrupt.', 'quick-redirects' ),
+								__( 'ERROR - Not a valid File', 'quick-redirects' ),
 								array(
 									'response'  => '200',
 									'back_link' => '1',
@@ -1814,8 +1786,8 @@ class quick_page_post_reds {
 				check_admin_referer( 'import_redirects_add_qppr' );
 				if ( $_FILES['qppr_file_add']['error'] > 0 ) {
 					wp_die(
-						__( 'An error occured during the file upload. It might me that the file is too large or you do not have the premissions to write to the temporary upload directory. Please fix your server configuration and retry.', 'quick-pagepost-redirect-plugin' ),
-						__( 'SERVER ERROR - Could Not Load', 'quick-pagepost-redirect-plugin' ),
+						__( 'An error occured during the file upload. It might me that the file is too large or you do not have the premissions to write to the temporary upload directory. Please fix your server configuration and retry.', 'quick-redirects' ),
+						__( 'SERVER ERROR - Could Not Load', 'quick-redirects' ),
 						array(
 							'response'  => '200',
 							'back_link' => '1',
@@ -1835,8 +1807,8 @@ class quick_page_post_reds {
 					}
 					if ( strpos( $config_file, $delim ) === false ) {
 						wp_die(
-							__( 'This does not look like the file is in the correct format - it is possibly damaged or corrupt.<br/>Be sure the redirects are 1 per line and the redirect and destination are seperated by a PIPE (|), COMMA (,) or a TAB.', 'quick-pagepost-redirect-plugin' ) . '<br/>Example:<br/><br/><code>redirect|destination</code>',
-							__( 'ERROR - Not a valid File', 'quick-pagepost-redirect-plugin' ),
+							__( 'This does not look like the file is in the correct format - it is possibly damaged or corrupt.<br/>Be sure the redirects are 1 per line and the redirect and destination are seperated by a PIPE (|), COMMA (,) or a TAB.', 'quick-redirects' ) . '<br/>Example:<br/><br/><code>redirect|destination</code>',
+							__( 'ERROR - Not a valid File', 'quick-redirects' ),
 							array(
 								'response'  => '200',
 								'back_link' => '1',
@@ -1880,8 +1852,8 @@ class quick_page_post_reds {
 							exit;
 						else :
 							wp_die(
-								__( 'It does not look like there are any valid items to import - check the file and try again.', 'quick-pagepost-redirect-plugin' ),
-								__( 'ERROR - No Valid items to add.', 'quick-pagepost-redirect-plugin' ),
+								__( 'It does not look like there are any valid items to import - check the file and try again.', 'quick-redirects' ),
+								__( 'ERROR - No Valid items to add.', 'quick-redirects' ),
 								array(
 									'response'  => '200',
 									'back_link' => '1',
@@ -1953,15 +1925,14 @@ class quick_page_post_reds {
 	}
 
 	function ppr_filter_plugin_actions( $links ) {
-		$links[] = '<a href="' . $this->adminlink . 'admin.php?page=redirect-options"><span class="dashicons dashicons-admin-settings"></span> ' . __( 'Settings', 'quick-pagepost-redirect-plugin' ) . '</a>';
+		$links[] = '<a href="' . $this->adminlink . 'admin.php?page=redirect-options"><span class="dashicons dashicons-admin-settings"></span> ' . esc_html__( 'Settings', 'quick-redirects' ) . '</a>';
 		return $links;
 	}
 
 	function ppr_filter_plugin_links( $links, $file ) {
 		if ( $file == plugin_basename( __FILE__ ) ) {
-			$links[] = '<a href="' . $this->adminlink . 'admin.php?page=redirect-updates"><span class="dashicons dashicons-external"></span> ' . __( 'Quick Redirects', 'quick-pagepost-redirect-plugin' ) . '</a>';
-			$links[] = '<a href="' . $this->adminlink . 'admin.php?page=redirect-faqs"><span class="dashicons dashicons-editor-help"></span> ' . __( 'FAQ', 'quick-pagepost-redirect-plugin' ) . '</a>';
-			$links[] = '<a target="_blank" href="' . $this->fcmlink . '/donations/"><span class="dashicons dashicons-heart"></span> ' . __( 'Donate', 'quick-pagepost-redirect-plugin' ) . '</a>';
+			$links[] = '<a href="' . $this->adminlink . 'admin.php?page=redirect-updates"><span class="dashicons dashicons-external"></span> ' . esc_html__( 'Quick Redirects', 'quick-redirects' ) . '</a>';
+			$links[] = '<a href="' . $this->adminlink . 'admin.php?page=redirect-faqs"><span class="dashicons dashicons-editor-help"></span> ' . esc_html__( 'FAQ', 'quick-redirects' ) . '</a>';
 		}
 		return $links;
 	}
@@ -1979,14 +1950,14 @@ class quick_page_post_reds {
 		// The actual fields for data entry
 		$pprredirecttype = get_post_meta( $post->ID, '_pprredirect_type', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_type', true ) : '';
 		$pprredirecturl  = get_post_meta( $post->ID, '_pprredirect_url', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_url', true ) : '';
-		echo '<label for="pprredirect_active" style="padding:2px 0;"><input type="checkbox" name="pprredirect_active" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_active', true ), 0 ) . ' />&nbsp;' . __( 'Make Redirect <strong>Active</strong>.', 'quick-pagepost-redirect-plugin' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'Check to turn on or redirect will not work.', 'quick-pagepost-redirect-plugin' ) . '</span></span></label><br />';
-		echo '<label for="pprredirect_newwindow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_newwindow" id="pprredirect_newwindow" value="_blank" ' . checked( '_blank', get_post_meta( $post->ID, '_pprredirect_newwindow', true ), 0 ) . '>&nbsp;' . __( 'Open in a <strong>new window.</strong>', 'quick-pagepost-redirect-plugin' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-pagepost-redirect-plugin' ) . '</span></span></label><br />';
-		echo '<label for="pprredirect_relnofollow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_relnofollow" id="pprredirect_relnofollow" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_relnofollow', true ), 0 ) . '>&nbsp;' . __( 'Add <strong>rel="nofollow"</strong> to link.', 'quick-pagepost-redirect-plugin' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-pagepost-redirect-plugin' ) . '</span></span></label><br />';
-		echo '<label for="pprredirect_rewritelink" style="padding:2px 0;"><input type="checkbox" name="pprredirect_rewritelink" id="pprredirect_rewritelink" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_rewritelink', true ), 0 ) . '>&nbsp;' . __( '<strong>Show</strong> Redirect URL in link.', 'quick-pagepost-redirect-plugin' ) . ' <span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'To increase effectivness, select "Use jQuery" in the options. This will only change the URL in the link <strong>NOT</strong> the URL in the Address bar.', 'quick-pagepost-redirect-plugin' ) . '</span></span></label><br /><br />';
+		echo '<label for="pprredirect_active" style="padding:2px 0;"><input type="checkbox" name="pprredirect_active" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_active', true ), 0 ) . ' />&nbsp;' . esc_html__( 'Make Redirect <strong>Active</strong>.', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'Check to turn on or redirect will not work.', 'quick-redirects' ) . '</span></span></label><br />';
+		echo '<label for="pprredirect_newwindow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_newwindow" id="pprredirect_newwindow" value="_blank" ' . checked( '_blank', get_post_meta( $post->ID, '_pprredirect_newwindow', true ), 0 ) . '>&nbsp;' . esc_html__( 'Open in a <strong>new window.</strong>', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-redirects' ) . '</span></span></label><br />';
+		echo '<label for="pprredirect_relnofollow" style="padding:2px 0;"><input type="checkbox" name="pprredirect_relnofollow" id="pprredirect_relnofollow" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_relnofollow', true ), 0 ) . '>&nbsp;' . esc_html__( 'Add <strong>rel="nofollow"</strong> to link.', 'quick-redirects' ) . '<span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options.', 'quick-redirects' ) . '</span></span></label><br />';
+		echo '<label for="pprredirect_rewritelink" style="padding:2px 0;"><input type="checkbox" name="pprredirect_rewritelink" id="pprredirect_rewritelink" value="1" ' . checked( '1', get_post_meta( $post->ID, '_pprredirect_rewritelink', true ), 0 ) . '>&nbsp;' . esc_html__( '<strong>Show</strong> Redirect URL in link.', 'quick-redirects' ) . ' <span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'To increase effectivness, select "Use jQuery" in the options. This will only change the URL in the link <strong>NOT</strong> the URL in the Address bar.', 'quick-redirects' ) . '</span></span></label><br /><br />';
 		// echo '<label for="pprredirect_casesensitive" style="padding:2px 0;"><input type="checkbox" name="pprredirect_casesensitive" id="pprredirect_casesensitive" value="1" '. checked('1',get_post_meta($post->ID,'_pprredirect_casesensitive',true),0).'>&nbsp;Make the Redirect Case Insensitive.</label><br /><br />';
-		echo '<label for="pprredirect_url"><b>' . __( 'Redirect / Destination URL:', 'quick-pagepost-redirect-plugin' ) . '</b></label><br />';
-		echo '<input type="text" style="width:75%;margin-top:2px;margin-bottom:2px;" name="pprredirect_url" value="' . esc_url( $pprredirecturl ) . '" /><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help"><br />' . __( '(i.e., <strong>http://example.com</strong> or <strong>/somepage/</strong> or <strong>p=15</strong> or <strong>155</strong>. Use <b>FULL URL</b> <i>including</i> <strong>http://</strong> for all external <i>and</i> meta redirects.)', 'quick-pagepost-redirect-plugin' ) . '</span></span><br /><br />';
-		echo '<label for="pprredirect_type"><b>' . __( 'Type of Redirect:', 'quick-pagepost-redirect-plugin' ) . '</b></label><br />';
+		echo '<label for="pprredirect_url"><b>' . esc_html__( 'Redirect / Destination URL:', 'quick-redirects' ) . '</b></label><br />';
+		echo '<input type="text" style="width:75%;margin-top:2px;margin-bottom:2px;" name="pprredirect_url" value="' . esc_url( $pprredirecturl ) . '" /><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help"><br />' . esc_html__( '(i.e., <strong>http://example.com</strong> or <strong>/somepage/</strong> or <strong>p=15</strong> or <strong>155</strong>. Use <b>FULL URL</b> <i>including</i> <strong>http://</strong> for all external <i>and</i> meta redirects.)', 'quick-redirects' ) . '</span></span><br /><br />';
+		echo '<label for="pprredirect_type"><b>' . esc_html__( 'Type of Redirect:', 'quick-redirects' ) . '</b></label><br />';
 
 		switch ( $pprredirecttype ) :
 			case '':
@@ -2008,11 +1979,11 @@ class quick_page_post_reds {
 
 		echo '
 		<select style="margin-top:2px;margin-bottom:2px;width:40%;" name="pprredirect_type" id="pprredirect_type">
-		<option value="301" ' . $ppr_option1 . '>301 ' . __( 'Permanent', 'quick-pagepost-redirect-plugin' ) . '</option>
-		<option value="302" ' . $ppr_option2 . '>302 ' . __( 'Temporary', 'quick-pagepost-redirect-plugin' ) . '</option>
-		<option value="307" ' . $ppr_option3 . '>307 ' . __( 'Temporary', 'quick-pagepost-redirect-plugin' ) . '</option>
-		<option value="meta" ' . $ppr_option5 . '>' . __( 'Meta Redirect', 'quick-pagepost-redirect-plugin' ) . '</option>
-		</select><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'Default is 301 (Permanent Redirect).', 'quick-pagepost-redirect-plugin' ) . ' </span></span><br /><br />
+		<option value="301" ' . $ppr_option1 . '>301 ' . esc_html__( 'Permanent', 'quick-redirects' ) . '</option>
+		<option value="302" ' . $ppr_option2 . '>302 ' . esc_html__( 'Temporary', 'quick-redirects' ) . '</option>
+		<option value="307" ' . $ppr_option3 . '>307 ' . esc_html__( 'Temporary', 'quick-redirects' ) . '</option>
+		<option value="meta" ' . $ppr_option5 . '>' . esc_html__( 'Meta Redirect', 'quick-redirects' ) . '</option>
+		</select><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'Default is 301 (Permanent Redirect).', 'quick-redirects' ) . ' </span></span><br /><br />
 		';
 		$metasel = ' meta-not-selected';
 		if ( $ppr_option5 == ' selected' ) {
@@ -2020,9 +1991,9 @@ class quick_page_post_reds {
 		}
 
 		echo '<div class="qppr-meta-section-wrapper' . $metasel . '">';
-		echo '	<label for="pprredirect_meta_secs" style="padding:2px 0;"><strong>' . __( 'Redirect Seconds (ONLY for meta redirects).', 'quick-pagepost-redirect-plugin' ) . '</strong></label><br /><input type="text" name="pprredirect_meta_secs" id="pprredirect_meta_secs" value="' . ( get_post_meta( $post->ID, '_pprredirect_meta_secs', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_meta_secs', true ) : '' ) . '" size="3"><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . __( 'Leave blank to use options setting. 0 = instant.', 'quick-pagepost-redirect-plugin' ) . ' </span></span><br /><br />';
+		echo '	<label for="pprredirect_meta_secs" style="padding:2px 0;"><strong>' . esc_html__( 'Redirect Seconds (ONLY for meta redirects).', 'quick-redirects' ) . '</strong></label><br /><input type="text" name="pprredirect_meta_secs" id="pprredirect_meta_secs" value="' . ( get_post_meta( $post->ID, '_pprredirect_meta_secs', true ) != '' ? get_post_meta( $post->ID, '_pprredirect_meta_secs', true ) : '' ) . '" size="3"><span class="qppr_meta_help_wrap"><span class="qppr_meta_help_icon dashicons dashicons-editor-help"></span><span class="qppr_meta_help">' . esc_html__( 'Leave blank to use options setting. 0 = instant.', 'quick-redirects' ) . ' </span></span><br /><br />';
 		echo '</div>';
-		echo __( '<strong>NOTE:</strong> For a Page or Post (or Custom Post) Redirect to work, it may need to be published first and then saved again as a Draft. If you do not already have a page/post created you can add a \'Quick\' redirect using the', 'quick-pagepost-redirect-plugin' ) . ' <a href="./admin.php?page=redirect-updates">' . __( 'Quick Redirects', 'quick-pagepost-redirect-plugin' ) . '</a> ' . __( 'method.', 'quick-pagepost-redirect-plugin' );
+		echo esc_html__( '<strong>NOTE:</strong> For a Page or Post (or Custom Post) Redirect to work, it may need to be published first and then saved again as a Draft. If you do not already have a page/post created you can add a \'Quick\' redirect using the', 'quick-redirects' ) . ' <a href="./admin.php?page=redirect-updates">' . esc_html__( 'Quick Redirects', 'quick-redirects' ) . '</a> ' . esc_html__( 'method.', 'quick-redirects' );
 	}
 
 	function isOne_none( $val = '' ) {
@@ -2568,44 +2539,44 @@ class quick_page_post_reds {
 	function qppr_meta_addon_page() {
 		?>
 	<div class="wrap" style="position:relative;">
-		<h2><?php echo __( 'Meta Redirect Settings', 'quick-pagepost-redirect-plugin' ); ?></h2>
+		<h2><?php echo esc_html__( 'Meta Redirect Settings', 'quick-redirects' ); ?></h2>
 		<?php
 		if ( ! empty( $_GET['settings-updated'] ) && sanitize_text_field( $_GET['settings-updated'] ) ) :
 			?>
-			<div id="message" class="updated notice is-dismissible"><p><?php echo __( 'Settings Updated', 'quick-pagepost-redirect-plugin' ); ?></p></div><?php endif; ?>
-		<p><?php echo __( 'This section is for updating options for redirects that use the "meta refresh" funcitonality for redirecting.', 'quick-pagepost-redirect-plugin' ); ?></p>
-		<p><?php echo __( 'Using the setting below, you can add elements or a message to the page that is loaded before tht redirect, or just allow the page to load as normal until the redirect reaches the number of seconds you have set below.', 'quick-pagepost-redirect-plugin' ); ?></p>
+			<div id="message" class="updated notice is-dismissible"><p><?php echo esc_html__( 'Settings Updated', 'quick-redirects' ); ?></p></div><?php endif; ?>
+		<p><?php echo esc_html__( 'This section is for updating options for redirects that use the "meta refresh" funcitonality for redirecting.', 'quick-redirects' ); ?></p>
+		<p><?php echo esc_html__( 'Using the setting below, you can add elements or a message to the page that is loaded before tht redirect, or just allow the page to load as normal until the redirect reaches the number of seconds you have set below.', 'quick-redirects' ); ?></p>
 		<form method="post" action="options.php" class="qpprform">
 			<?php settings_fields( 'qppr-meta-settings-group' ); ?>
 			<table class="form-table">
 				<tr>
-					<th scope="row"><label id="qppr-meta-options"><?php echo __( 'Load Page Content?', 'quick-pagepost-redirect-plugin' ); ?></label></th>
-					<td><input type="checkbox" name="qppr_meta_addon_load" value="1" <?php echo ( ( get_option( 'qppr_meta_addon_load', '' ) != '' ) ? ' checked="checked"' : '' ); ?> /><span><?php echo __( 'Check if you want the normal page to load before redirect happens (if redirect is 0 seconds, it may not load fully).', 'quick-pagepost-redirect-plugin' ); ?></span></td>
+					<th scope="row"><label id="qppr-meta-options"><?php echo esc_html__( 'Load Page Content?', 'quick-redirects' ); ?></label></th>
+					<td><input type="checkbox" name="qppr_meta_addon_load" value="1" <?php echo ( ( get_option( 'qppr_meta_addon_load', '' ) != '' ) ? ' checked="checked"' : '' ); ?> /><span><?php echo esc_html__( 'Check if you want the normal page to load before redirect happens (if redirect is 0 seconds, it may not load fully).', 'quick-redirects' ); ?></span></td>
 				</tr>
 				<tr>
-					<th scope="row"><label><?php echo __( 'Redirect Seconds', 'quick-pagepost-redirect-plugin' ); ?>:</label></th>
-					<td><input type="text" size="5" name="qppr_meta_addon_sec" value="<?php echo get_option( 'qppr_meta_addon_sec', '0' ); ?>"/><span><code>0</code> = <?php echo __( 'instant', 'quick-pagepost-redirect-plugin' ); ?>*. <code>10</code> <?php echo __( 'would redirect 10 seconds after the required element is loaded (i.e., body or an element with a specific class). *Intsant will still have a \'slight\' delay, as some content needs to load before the redirect occurs. Settings on individual pages will override this setting.', 'quick-pagepost-redirect-plugin' ); ?></span></td>
+					<th scope="row"><label><?php echo esc_html__( 'Redirect Seconds', 'quick-redirects' ); ?>:</label></th>
+					<td><input type="text" size="5" name="qppr_meta_addon_sec" value="<?php echo get_option( 'qppr_meta_addon_sec', '0' ); ?>"/><span><code>0</code> = <?php echo esc_html__( 'instant', 'quick-redirects' ); ?>*. <code>10</code> <?php echo esc_html__( 'would redirect 10 seconds after the required element is loaded (i.e., body or an element with a specific class). *Intsant will still have a \'slight\' delay, as some content needs to load before the redirect occurs. Settings on individual pages will override this setting.', 'quick-redirects' ); ?></span></td>
 				</tr>
 				<tr>
-					<th scope="row"><label><?php echo __( 'Redirect Trigger', 'quick-pagepost-redirect-plugin' ); ?>:</label></th>
-					<td><input type="text" size="25" id="qppr_meta_addon_trigger" name="qppr_meta_addon_trigger" value="<?php echo get_option( 'qppr_meta_addon_trigger', 'body' ); ?>"/><span><?php printf( __( 'The %1$s, %2$s or tag name of the element you want to load before triggering redirect. Use a %3$s in the class name or %4$s for the ID. <strong><em>For example:</em></strong> if you want it to redirect when the body tag loads, you would type %5$s above. To redirect after an element with a class or ID, use %6$s or %7$s.', 'quick-pagepost-redirect-plugin' ), '<code>class</code>', '<code>ID</code>', '<code>.</code>', '<code>#</code>', '<code>body</code>', '<code>.some-class</code>', '<code>#some-id</code>' ); ?></span></td>
+					<th scope="row"><label><?php echo esc_html__( 'Redirect Trigger', 'quick-redirects' ); ?>:</label></th>
+					<td><input type="text" size="25" id="qppr_meta_addon_trigger" name="qppr_meta_addon_trigger" value="<?php echo get_option( 'qppr_meta_addon_trigger', 'body' ); ?>"/><span><?php printf( esc_html__( 'The %1$s, %2$s or tag name of the element you want to load before triggering redirect. Use a %3$s in the class name or %4$s for the ID. <strong><em>For example:</em></strong> if you want it to redirect when the body tag loads, you would type %5$s above. To redirect after an element with a class or ID, use %6$s or %7$s.', 'quick-redirects' ), '<code>class</code>', '<code>ID</code>', '<code>.</code>', '<code>#</code>', '<code>body</code>', '<code>.some-class</code>', '<code>#some-id</code>' ); ?></span></td>
 				</tr>
 				<tr>
-					<th scope="row"><label><?php echo __( 'Append Content To', 'quick-pagepost-redirect-plugin' ); ?>:</label></th>
-					<td><input type="text" size="25" id="qppr_meta_append_to" name="qppr_meta_append_to" value="<?php echo get_option( 'qppr_meta_append_to', 'body' ); ?>"/><span><?php printf( __( 'The %1$s, %2$s or tag name of the element you want the content to load into when the page loads.', 'quick-pagepost-redirect-plugin' ), '<code>class</code>', '<code>ID</code>' ); ?></span></td>
+					<th scope="row"><label><?php echo esc_html__( 'Append Content To', 'quick-redirects' ); ?>:</label></th>
+					<td><input type="text" size="25" id="qppr_meta_append_to" name="qppr_meta_append_to" value="<?php echo get_option( 'qppr_meta_append_to', 'body' ); ?>"/><span><?php printf( esc_html__( 'The %1$s, %2$s or tag name of the element you want the content to load into when the page loads.', 'quick-redirects' ), '<code>class</code>', '<code>ID</code>' ); ?></span></td>
 				</tr>
 				<tr>
-					<th scope="row"><label><?php echo __( 'Page Content', 'quick-pagepost-redirect-plugin' ); ?>:</label></th>
-					<td><span><?php printf( __( 'Be sure to include a tag with your class or ID or tag name (entered above) so the redirect triggers - if you do not, the redirect will not happen. If you check the box to "Load Page Content", this data will be inserted into the page right after the %1$s tag. Otherwise, it will be the only content shown.', 'quick-pagepost-redirect-plugin' ), '&lt;body&gt;' ); ?><br /><strong><br /><?php echo __( 'Add your content below', 'quick-pagepost-redirect-plugin' ); ?></strong>.</span>
+					<th scope="row"><label><?php echo esc_html__( 'Page Content', 'quick-redirects' ); ?>:</label></th>
+					<td><span><?php printf( esc_html__( 'Be sure to include a tag with your class or ID or tag name (entered above) so the redirect triggers - if you do not, the redirect will not happen. If you check the box to "Load Page Content", this data will be inserted into the page right after the %1$s tag. Otherwise, it will be the only content shown.', 'quick-redirects' ), '&lt;body&gt;' ); ?><br /><strong><br /><?php echo esc_html__( 'Add your content below', 'quick-redirects' ); ?></strong>.</span>
 						<textarea id="qppr_meta_addon_content" name="qppr_meta_addon_content"><?php echo get_option( 'qppr_meta_addon_content', '' ); ?></textarea>
-						<br /><span><?php echo __( 'To use a counter, add the following:', 'quick-pagepost-redirect-plugin' ); ?>
+						<br /><span><?php echo esc_html__( 'To use a counter, add the following:', 'quick-redirects' ); ?>
 						<pre>&lt;div id="qppr_meta_counter" data-meta-counter-text="This page will redirect in %1$ seconds."&gt;&lt;/div&gt;</pre>
-						<?php echo __( 'The "%1$" will be replaced with the actual seconds.', 'quick-pagepost-redirect-plugin' ); ?>
+						<?php echo esc_html__( 'The "%1$" will be replaced with the actual seconds.', 'quick-redirects' ); ?>
 						</span>
 					</td>
 				</tr>
 			</table>
-			<p class="submit"><input type="submit" class="button-primary" value="<?php echo __( 'Save Changes', 'quick-pagepost-redirect-plugin' ); ?>" /></p>
+			<p class="submit"><input type="submit" class="button-primary" value="<?php echo esc_html__( 'Save Changes', 'quick-redirects' ); ?>" /></p>
 		</form>
 	</div>
 		<?php
@@ -2624,8 +2595,8 @@ class quick_page_post_reds {
 	function qppr_meta_addon_admin_notice() {
 		echo '
 		<div class="update-nag">
-			' . __( 'You have the Addon Plugin', 'quick-pagepost-redirect-plugin' ) . ' <strong>"QPPR - Meta Redirect Add On"</strong> ' . __( 'activated. This plugin\'s functionality is now built into the parent', 'quick-pagepost-redirect-plugin' ) . ' <strong>"Quick Page/Post Redirect Plugin"</strong> ' . __( 'so you no longer need to have the addon plugin installed.', 'quick-pagepost-redirect-plugin' ) . '
-			<br /><br />' . __( 'The plugin will be deactivated now to prevent conflicts. You may delete it if you desire.', 'quick-pagepost-redirect-plugin' ) . '
+			' . esc_html__( 'You have the Addon Plugin', 'quick-redirects' ) . ' <strong>"QPPR - Meta Redirect Add On"</strong> ' . esc_html__( 'activated. This plugin\'s functionality is now built into the parent', 'quick-redirects' ) . ' <strong>"Quick Page/Post Redirect Plugin"</strong> ' . esc_html__( 'so you no longer need to have the addon plugin installed.', 'quick-redirects' ) . '
+			<br /><br />' . esc_html__( 'The plugin will be deactivated now to prevent conflicts. You may delete it if you desire.', 'quick-redirects' ) . '
 		</div>';
 	}
 }

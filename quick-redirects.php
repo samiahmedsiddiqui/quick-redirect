@@ -12,7 +12,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  *
  * Text Domain: quick-redirects
- * Domain Path: /languages/
+ * Domain Path: /languages
  *
  * @package QuickRedirects
  */

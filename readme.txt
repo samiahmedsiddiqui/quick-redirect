@@ -1,6 +1,6 @@
 === Quick Redirects ===
 Contributors: sasiddiqui
-Tags: redirect, 301, 302, meta, plugin, forward, nofollow, posts, pages, 404, custom post types, nav menu
+Tags: redirect, 301, 302, meta, forward
 Tested up to: 6.6
 Stable tag: 1.0.0
 License: GPLv3

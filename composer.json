@@ -7,14 +7,7 @@
 		"301",
 		"302",
 		"meta",
-		"plugin",
-		"forward",
-		"nofollow",
-		"posts",
-		"pages",
-		"404",
-		"custom post types",
-		"nav menu"
+		"forward"
 	],
 	"homepage": "https://wordpress.org/plugins/search/quick-redirects/",
 	"license": "GPL-3.0-or-later",
