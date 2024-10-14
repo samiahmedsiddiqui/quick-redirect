@@ -1,17 +1,16 @@
-=== Quick Page/Post Redirect Plugin ===
-Contributors: anadnet
+=== Quick Redirects ===
+Contributors: sasiddiqui
 Tags: redirect, 301, 302, meta, plugin, forward, nofollow, posts, pages, 404, custom post types, nav menu
-Donate Link:
-Requires at least: 4.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tested up to: 6.2.2
-Stable tag: 5.2.4
+Tested up to: 6.6
+Stable tag: 1.0.0
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Easily redirect pages/posts or custom post types to another page/post or external URL by specifying the redirect URL and type (301, 302, 307, meta).
 
 == Description ==
-**Current Version 5.2.4**
+
+This plugin is a fork of [Quick Page/Post Redirect Plugin](https://wordpress.org/plugins/quick-pagepost-redirect-plugin/). This fork is created to fix PHP 8 issues and make it compatible with it.
 
 This plugin has two redirect functionalities - **"Quick Redirects"** and **"Individual Redirects"**:
 
@@ -178,218 +177,7 @@ NO it isn't! Check the plugin FAQs/Help page for a more up to date list of Frequ
 7. Meta Redirect Options Page.
 
 == Changelog ==
-= TODO =
-* THIS SECTION IS JUST TO KEEP TRACK OF TODO ITEMS FOR FUTURE UPDATES.
-* Add New Window and No Follow to links where the URL has been rewritten. Currently if you rewrite the URL neither will work as they are referenced with the original URL, not the rewrite.
 
-= 5.2.4 =
-* **Vulnerability from XSS attacks fixed
+= 1.0.0 -  =
 
-= 5.2.3 =
-* **Security fixes
-
-= 5.2.2 =
-* **WordPress 5.6 compatibility check
-
-= 5.2.0 =
-* **Resolved potential nonce vulnerability issue
-
-= 5.1.9 =
-* **New Compatibility Tested** from WordPress versions 4.3.19 up to 5.22
-
-= 5.1.8 =
-* **Bug Fix:** Used a different minified version for the qppr_frontend_script.min.js file after it received a false positive of being a Trojan. The 5.1.7 version is totally safe to use too. The false positive was caused due to the way the specific file was minified. This is a confirmation that nothing was infected or was acting as a trojan of any sort in any previous version.
-= 5.1.7 =
-* **Bug Fix:** Fixed Post redirects bug caused by 5.1.6
-
-= 5.1.6 =
-* **Security Fix:** Fixed security concern in the ppr_parse_request_new method
-
-= 5.1.5 =
-* **Feature Addition:** Add Canonical Redirect detection to fix potential www/non-www redirect match problems. Removed from TODO!
-* **Deletion:** Took out testing code that was accidentally left in the previous version.
-* **Filter Addition:** Added 'qppr_filter_quickredirect_index' filter to allow changing the the index just before the redirect. See filters-hooks-helper_funcitons.txt in plugin folder for usage.
-
-= 5.1.4 =
-* **Feature Addition:** Added filter to Meta Box call to allow people to adjust context and priority if they choose. See filters-hooks-helper_funcitons.txt in plugin folder for usage. Thanks [mdmoreau](https://wordpress.org/support/profile/mdmoreau) for the suggestion!
-* **Feature Addition:** Added 'action=no-redirect' to be able to view a redirect page without the redirect triggering. Thanks [One Eye Pied](https://wordpress.org/support/profile/one-eye-pied) for the suggestion!
-* **Bug Fix:** Adjusted line ending characters for Import/Export to try to allow both Unix and Dos line break characters (LF and CRLF) on Import. Thanks [Jose Luis Cruz](https://wordpress.org/support/profile/joseluiscruz) for pointing this out!
-* **Bug Fix:** Fixed database query for jQuery localization funciton. Was a major resource hog on sites with a lot of posts and would crash MySQL on some sites.
-* **Update:** Fixed some spelling errors (thanks to those of you who pointed them out).
-* **Update:** Updated English Translations.
-
-= 5.1.3 =
-* **Update:** Updated English Translations.
-* **Bug Fix:** Fixed Meta redirect functions so browsers that no longer allow refresh redirects can still use Meta redirects (i.e., Firefox, Edge, some IE).
-* **Bug Fix:** Fixed Function for Individual Redirects for New Window functionality. Was not working unless both No Follow and New Window were selected.
-* **TODO:** Add New Window and No Follow to links where the URL has been rewritten. Currently if you rewrite the URL neither will work as they are referenced with the original URL, not the rewrite.
-* **TODO (Still):** Add Canonical Redirect filter to fix potential www/non-www redirect match problems.
-
-= 5.1.2 =
-* **Update:** Updated English Translations.
-* **Update:** Updated license.txt file (had wrong version of license).
-* **Update:** Verified plugin for WordPress 4.3 compatibility.
-* **Update:** Add check if current user can manage_options when deleting All Redirects. Prevents logged in users without permissions from maliciously deleting redirects.
-* **Update:** Minify JavaScript files for front-end and admin (non-minified files still remain in the file structure for reference).
-* **Feature Addition:** Added experimental function to delete cache files (for W3 Total Cache, WP Super Cache and WP Fastest Cache) on functionality saves (add/remove redirects and options updates) to try to help some users resolve caching issues after an update with these plugins installed.
-* **Feature Addition:** Added "helper" functions to allow for adding or deleting Quick and Individual Redirects programatically (see filters-hooks-helper_functions.txt in plugin directory for more info).
-* **Bug Fix:** Fix ajax function for Quick Redirect delete and save (if a redirect was deleted, anything below it would not be correctly referenced and deleting or editing would not work)
-* **Bug Fix:** Fix to 'rewrite URL' jQuery function that was replacing text instead of HTML - thanks Leo Kerr <leo@myelectriccar.com.au>
-* **TODO (Still):** Add Canonical Redirect filter to fix potential www/non-www redirect match problems.
-
-= 5.1.1 =
-* Fix 'array to string' error message on Quick Redirect save - thanks Simon Codrington <simon@webbird.com.au>
-* TODO: Add Canonical Redirect filter to fix potential www/non-www redirect match problems.
-* Added Meta Redirect Options Page - this splits out Meta Options from the main options page.
-* Added more enhanced meta redirect scripting to allow for tracking or other page content (including countdown if desired).
-* Fixed Layout issues on Quick Redirect Page making it impossible to edit redirects in some cases.
-* Fixed a few spelling errors.
-* Added Help Content to Meta Options page.
-* Added metabox setting for meta redirect seconds for individual redirects so you can set different time for each meta redirect.
-* Update POT and English Translation file - added limited Spanish translations.
-
-= 5.1.0 =
-* Fix security issue for deleting ALL Quick and Individual Redirects.
-* Update POT and English Translation file.
-* Added 'No Quick Redirects' message when there are no Quick Redirects.
-
-= 5.0.7 =
-* Added textdomain for future translations. English Complete.
-* Change Quick Redirects page to use ajax to save and edit existing redirects, instead of all redirects in post fields. This is to eliminate the 'max_input_vars' setting in php from stopping large numbers of redirects from saving.
-* Fix Metabox loading issues for custom post types.
-* Added 'redirect' column for post, page and custom post type listing pages.
-* Fixed sanitizing URL on saving of redirects (now will not strip encoded characters and spaces).
-* Optimized CSS styles and JavaScript files for admin.
-* Added Admin Pointers for new features.
-* Added jQuery script to front end pages to better handle New Window/No Follow Functionality.
-* Split out Import / Export feature to make it easier to find.
-* Update Query String add back function - patch submitted for version 5.0.7 by Romulo De Lazzari <romulodelazzari@gmail.com> (thanks!)
-
-= 5.0.6 =
-* Fix to some users getting Warning messages for parse_url function.
-* Added nonce field checking for Quick Redirects form to help eliminate the possibility of form takeover on submission of quick redirect saves.
-
-= 5.0.5 =
-* Fix to security flaw for logged in admin users.
-* Fix to extra spaces that broke some callback functions in the redirect class in 5.0.4.
-
-= 5.0.4 =
-* Minor bug cleanup
-* Security fixes: fixed possible cross-scripting vulnerability in saving of data to options.
-* Changed the hook call level for the redirects hook on normal redirects so it will not interfere with some other plugins.
-
-
-= 5.0.3 =
-* Minor bug cleanup update - (no new features added)
-* Bug fixes: JavaScript ghost js file call fixed. Actions hooks not applying issue fixed. Querystring redirect issue addressed. Unset index errors addressed. Some Network/MU problems fixed.
-* Modified Import and Export scripts to export a more editable export file. Import can be either old encoded version or new readable PIPE version.
-* Typos and minor layout issues addressed.
-
-= 5.0.2 =
-* Bug fixes and jQuery now set to off until issues are resolved.
-* Set Case Sensitive to on by default - Some people having issues with infinite loops.
-
-= 5.0.1 =
-* Fix to jQuery conflict issue.
-
-= 5.0 =
-* Added jQuery version check to ensure no problems with themes forcing older versions of jQuery
-* Added a few warning /info messages to Quick Redirects page.
-* Redirect summary was updated to display Quick Redirects as well as individual redirects. Now it is easier to see at a glance what redirects you have set up.
-* Rewrite of Quick Redirects functions to allow selecting Open in New Window (NW) and rel=nofollow (NF) as long as **use jQuery?** is selected.
-* Added "use jQuery" option on settings page - on by default after upgrade
-* Added jQuery redirect replace, target="_blank", and rel="nofollow" to increase success for additional options (mainly Quick redirects).
-* Changed out WP_PLUGIN_URL for plugins_url() to help resolve errors in redirects for SSL/https
-* Changed the way custom post types are handled.These are now on by default for new users - or users who have not specifically set to off.
-* The ability to turn off the Plugin Meta Box for any post type was added (admin permissions required).
-* Import and Export features were added to allow for backup of existing Quick Redirects, Restoring a backup or adding bulk redirects.
-* Plugin clean-up features were added to completely remove either Page/Post meta data (for regular redirects), Quick Redirects, or both.
-* Several filter and action hooks were added to help users better integrate the plugin into their theme, should they need additional functionality.
-* New FAQs/Help page with items provided by an RSS feed, so we can easily update FAQs when common questions/issues arise.
-* Query String data is now preserved for Quick Redirects (thanks to Jon Wilson for the contribution).
-* Case insensitivity option was added for Quick Redirects (thanks to Brian DiChiara for the contribution).
-
-= 4.2.2 =
-* Fix some embarrassing spelling errors.(07/14/2011)
-* Fix Quick Redirects links from inside the redirect edit box and plugin page - they would give a "not authorized" warning because the page location changed in version 4.0 (07/14/11)
-
-= 4.2.1 =
-* Fix to trailing slash non-redirect for quick redirects.(06/28/2011)
-* Note - this was not a public version fix, but a dev testing version - this fix is publicly included in 4.2.2.
-
-= 4.2 =
-* Fix to menus pages always opening in New Window even when not selected.(05/08/2011)
-* Fix Categories/Archives automatically redirecting to the first post with redirect set if any post on the page had a redirect set.(05/08/2011)
-* Fix Homepage redirecting to first post with redirect set if using posts as home and any post had a redirect.(05/08/2011)
-* Fix misrepresentation of new window global setting on options page. Should read that "all redirects WILL open in a new window" not "will NOT open in a new window". (05/08/2011)
-* Update description to note that the plugin requires PHP 5+ because some of the class calls will not work in php4 (plugin will not activate). (05/08/2011)
-
-= 4.1 =
-* Fix Minor spelling issues and code typos.(05/05/2011)
-
-= 4.0 =
-* Rewrite of all functions for better optimization.(05/01/2011)
-* Added consolidated DB call at class setup to reduce DB calls to one call per page load.(05/01/2011)
-* Moved entire plugin into a class for easier updates.(05/01/2011)
-* Added new Options page with Global Overrides.(05/02/2011)
-* Integrated Custom Post Types functionality.(05/02/2011)
-* Created a Summary Page for a quick glace of set up redirects.(05/04/2011)
-* Moved Quick Redirects menu from settings to a new Redirects Menu.(05/03/2011)
-* Added additional checks and validations when adding Quick Redirects.(05/03/2011)
-* Added a way to delete Quick Redirects easier.(03/01/2011)
-
-= 3.2.3 =
-* Fix New Window and No Follow attributes in themes with older menu calls. (12/29/10)
-= 3.2.2 =
-* Fix meta tag redirect method. Was broken because of new method of checking redirects with less query calls. (12/16/10)
-* Fix php code errors - still had some debugging code live that will cause some users to have problems.(12/16/10)
-= 3.2.1 =
-* limited test release - testing for some of 3.2.2 release fixes. (12/14/10)
-= 3.2 =
-* remove functions ppr_linktotarget, ppr_linktonorel, ppr_redirectto and ppr_linktometa.(12/10/2010)
-* re-write functions to consolidate queries. (12/10/2010)
-* added new filters for New menu structure to filter wp_nav_menu menus as well as old wp_page_menus functions. (12/10/2010)
-* cleaned up new window and nofollow code to work more consistently. (12/10/2010)
-= 3.1 =
-* Re-issue of 2.1 for immediate fix of issue with the 3.0 version.(6/21/2010)
-= 3.0 =
-* Enhance filter function in main class to reduce Database calls. (06/20/2010)
-= 2.1 =
-* Fix Bug - Open in New Window would not work unless Show Link URL was also selected. (3/12/2010)
-* Fix Bug - Add rel=nofollow would not work if Open in a New Window was not selected. (3/13/2010)
-* Fix Bug - Show Link, Add nofollow and Open in New Window would still work when redirect not active. (3/13/2010)
-* Added new preg_match_all and preg_replace calls to add target and nofollow links - more efficient and accurate - noticed some cases where old function would add the items if a redirect link had the same URL. (3/13/2010)
-= 2.0 =
-* Cosmetic code cleanup. (2/28/2010)
-* Remove warning and error messages created in 1.9 (2/28/2010)
-= 1.9 =
-* Added 'Open in New Window' Feature. (2/20/2010)
-* Added 'rel="nofollow"' attribute option for links that will redirect. (2/20/2010)
-* Added 'rewrite url/permalink' option to hide the regular link and replace it with the new re-write link anywhere the link is displayed on the site. (2/20/2010)
-* Hid the Custom Field Meta Data that the plugin uses - this is just to clean up the custom fields box. (2/20/2010)
-= 1.8 =
-* Added a new Quick 301 Redirects Page to allow adding of additional redirects that do not have Pages or Posts created for them. Based on Scott Nelle's Simple 301 Redirects plugin.(12/28/2009)
-= 1.7 =
-* fix to correct meta redirect - moved "exit" command to "addtoheader_theme" function. Also fixed the problem with some pages not redirecting. Made the plugin WordPress MU compatible. (9/8/2009)
-= 1.6.1 =
-* Small fix to correct the same problem as 1.6 for Category and Archive pages (9/1/2009)
-= 1.6 =
-* Fixed wrongful redirect when the first blog post on home page (main blog page) has a redirect set up - this was redirecting the entire page incorrectly. This was only an issue with the first post on a page. (9/1/2009)
-= 1.5 =
-* Major re-Write of the plugin core function to hook WP at a later time to take advantage of the POST function - no sense re-creating the wheel.
-* Removed the 'no code' redirect, as it turns out, many browsers will not redirect properly without a code - sorry guys.
-* Can have page/post as draft and still redirect - but ONLY after the post/page has first been published and then re-saved as draft (this will hopefully be a fix for a later version). (8/31/2009)
-= 1.4 =
-* Add exit script command after header redirect function - needed on some servers and browsers. (8/19/2009)
-= 1.3 =
-* Add Meta Re-fresh option (7/26/2009)
-= 1.2 =
-* Add easy Post/Page Edit Box (7/25/2009)
-= 1.1 =
-* Fix redirect for off site links (7/7/2009)
-= 1.0 =
-* Initial Plugin creation (7/1/2009)
-
-== Upgrade Notice ==
-= 5.1.5 =
-* Bug Fixes.
+* Initial version of the plugin to support PHP 8.
