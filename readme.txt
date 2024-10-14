@@ -180,6 +180,6 @@ NO it isn't! Check the plugin FAQs/Help page for a more up to date list of Frequ
 
 == Changelog ==
 
-= 1.0.0 -  =
+= 1.0.0 - Oct 14, 24 =
 
 * Initial version of the plugin to support PHP 8.
